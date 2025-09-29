@@ -58,7 +58,7 @@ export function xoroshiro128(state: bigint) {
 const rand = xoroshiro128(0xa187eb39cdcaed8f31c4b365b102e01en)
 
 const PIECE_KEYS = Array.from({ length: 2 }, () =>
-  Array.from({ length: 6 }, () => Array.from({ length: 128 }, () => rand())),
+  Array.from({ length: 6 }, () => Array.from({ length: 1024 }, () => rand())),
 )
 
 const EP_KEYS = Array.from({ length: 8 }, () => rand())
@@ -80,16 +80,81 @@ export const KING = 'k'
 export type Color = 'w' | 'b'
 export type PieceSymbol = 'p' | 'n' | 'b' | 'r' | 'q' | 'k'
 
+
 // prettier-ignore
 export type Square =
-    'a8' | 'b8' | 'c8' | 'd8' | 'e8' | 'f8' | 'g8' | 'h8' |
-    'a7' | 'b7' | 'c7' | 'd7' | 'e7' | 'f7' | 'g7' | 'h7' |
-    'a6' | 'b6' | 'c6' | 'd6' | 'e6' | 'f6' | 'g6' | 'h6' |
-    'a5' | 'b5' | 'c5' | 'd5' | 'e5' | 'f5' | 'g5' | 'h5' |
-    'a4' | 'b4' | 'c4' | 'd4' | 'e4' | 'f4' | 'g4' | 'h4' |
-    'a3' | 'b3' | 'c3' | 'd3' | 'e3' | 'f3' | 'g3' | 'h3' |
-    'a2' | 'b2' | 'c2' | 'd2' | 'e2' | 'f2' | 'g2' | 'h2' |
-    'a1' | 'b1' | 'c1' | 'd1' | 'e1' | 'f1' | 'g1' | 'h1'
+    'a8h' | 'b8h' | 'c8h' | 'd8h' | 'e8h' | 'f8h' | 'g8h' | 'h8h' |
+    'a7h' | 'b7h' | 'c7h' | 'd7h' | 'e7h' | 'f7h' | 'g7h' | 'h7h' |
+    'a6h' | 'b6h' | 'c6h' | 'd6h' | 'e6h' | 'f6h' | 'g6h' | 'h6h' |
+    'a5h' | 'b5h' | 'c5h' | 'd5h' | 'e5h' | 'f5h' | 'g5h' | 'h5h' |
+    'a4h' | 'b4h' | 'c4h' | 'd4h' | 'e4h' | 'f4h' | 'g4h' | 'h4h' |
+    'a3h' | 'b3h' | 'c3h' | 'd3h' | 'e3h' | 'f3h' | 'g3h' | 'h3h' |
+    'a2h' | 'b2h' | 'c2h' | 'd2h' | 'e2h' | 'f2h' | 'g2h' | 'h2h' |
+    'a1h' | 'b1h' | 'c1h' | 'd1h' | 'e1h' | 'f1h' | 'g1h' | 'h1h' |
+
+    'a8g' | 'b8g' | 'c8g' | 'd8g' | 'e8g' | 'f8g' | 'g8g' | 'h8g' |
+    'a7g' | 'b7g' | 'c7g' | 'd7g' | 'e7g' | 'f7g' | 'g7g' | 'h7g' |
+    'a6g' | 'b6g' | 'c6g' | 'd6g' | 'e6g' | 'f6g' | 'g6g' | 'h6g' |
+    'a5g' | 'b5g' | 'c5g' | 'd5g' | 'e5g' | 'f5g' | 'g5g' | 'h5g' |
+    'a4g' | 'b4g' | 'c4g' | 'd4g' | 'e4g' | 'f4g' | 'g4g' | 'h4g' |
+    'a3g' | 'b3g' | 'c3g' | 'd3g' | 'e3g' | 'f3g' | 'g3g' | 'h3g' |
+    'a2g' | 'b2g' | 'c2g' | 'd2g' | 'e2g' | 'f2g' | 'g2g' | 'h2g' |
+    'a1g' | 'b1g' | 'c1g' | 'd1g' | 'e1g' | 'f1g' | 'g1g' | 'h1g' |
+
+    'a8f' | 'b8f' | 'c8f' | 'd8f' | 'e8f' | 'f8f' | 'g8f' | 'h8f' |
+    'a7f' | 'b7f' | 'c7f' | 'd7f' | 'e7f' | 'f7f' | 'g7f' | 'h7f' |
+    'a6f' | 'b6f' | 'c6f' | 'd6f' | 'e6f' | 'f6f' | 'g6f' | 'h6f' |
+    'a5f' | 'b5f' | 'c5f' | 'd5f' | 'e5f' | 'f5f' | 'g5f' | 'h5f' |
+    'a4f' | 'b4f' | 'c4f' | 'd4f' | 'e4f' | 'f4f' | 'g4f' | 'h4f' |
+    'a3f' | 'b3f' | 'c3f' | 'd3f' | 'e3f' | 'f3f' | 'g3f' | 'h3f' |
+    'a2f' | 'b2f' | 'c2f' | 'd2f' | 'e2f' | 'f2f' | 'g2f' | 'h2f' |
+    'a1f' | 'b1f' | 'c1f' | 'd1f' | 'e1f' | 'f1f' | 'g1f' | 'h1f' |
+
+    'a8e' | 'b8e' | 'c8e' | 'd8e' | 'e8e' | 'f8e' | 'g8e' | 'h8e' |
+    'a7e' | 'b7e' | 'c7e' | 'd7e' | 'e7e' | 'f7e' | 'g7e' | 'h7e' |
+    'a6e' | 'b6e' | 'c6e' | 'd6e' | 'e6e' | 'f6e' | 'g6e' | 'h6e' |
+    'a5e' | 'b5e' | 'c5e' | 'd5e' | 'e5e' | 'f5e' | 'g5e' | 'h5e' |
+    'a4e' | 'b4e' | 'c4e' | 'd4e' | 'e4e' | 'f4e' | 'g4e' | 'h4e' |
+    'a3e' | 'b3e' | 'c3e' | 'd3e' | 'e3e' | 'f3e' | 'g3e' | 'h3e' |
+    'a2e' | 'b2e' | 'c2e' | 'd2e' | 'e2e' | 'f2e' | 'g2e' | 'h2e' |
+    'a1e' | 'b1e' | 'c1e' | 'd1e' | 'e1e' | 'f1e' | 'g1e' | 'h1e' |
+
+    'a8d' | 'b8d' | 'c8d' | 'd8d' | 'e8d' | 'f8d' | 'g8d' | 'h8d' |
+    'a7d' | 'b7d' | 'c7d' | 'd7d' | 'e7d' | 'f7d' | 'g7d' | 'h7d' |
+    'a6d' | 'b6d' | 'c6d' | 'd6d' | 'e6d' | 'f6d' | 'g6d' | 'h6d' |
+    'a5d' | 'b5d' | 'c5d' | 'd5d' | 'e5d' | 'f5d' | 'g5d' | 'h5d' |
+    'a4d' | 'b4d' | 'c4d' | 'd4d' | 'e4d' | 'f4d' | 'g4d' | 'h4d' |
+    'a3d' | 'b3d' | 'c3d' | 'd3d' | 'e3d' | 'f3d' | 'g3d' | 'h3d' |
+    'a2d' | 'b2d' | 'c2d' | 'd2d' | 'e2d' | 'f2d' | 'g2d' | 'h2d' |
+    'a1d' | 'b1d' | 'c1d' | 'd1d' | 'e1d' | 'f1d' | 'g1d' | 'h1d' |
+
+    'a8c' | 'b8c' | 'c8c' | 'd8c' | 'e8c' | 'f8c' | 'g8c' | 'h8c' |
+    'a7c' | 'b7c' | 'c7c' | 'd7c' | 'e7c' | 'f7c' | 'g7c' | 'h7c' |
+    'a6c' | 'b6c' | 'c6c' | 'd6c' | 'e6c' | 'f6c' | 'g6c' | 'h6c' |
+    'a5c' | 'b5c' | 'c5c' | 'd5c' | 'e5c' | 'f5c' | 'g5c' | 'h5c' |
+    'a4c' | 'b4c' | 'c4c' | 'd4c' | 'e4c' | 'f4c' | 'g4c' | 'h4c' |
+    'a3c' | 'b3c' | 'c3c' | 'd3c' | 'e3c' | 'f3c' | 'g3c' | 'h3c' |
+    'a2c' | 'b2c' | 'c2c' | 'd2c' | 'e2c' | 'f2c' | 'g2c' | 'h2c' |
+    'a1c' | 'b1c' | 'c1c' | 'd1c' | 'e1c' | 'f1c' | 'g1c' | 'h1c' |
+
+    'a8b' | 'b8b' | 'c8b' | 'd8b' | 'e8b' | 'f8b' | 'g8b' | 'h8b' |
+    'a7b' | 'b7b' | 'c7b' | 'd7b' | 'e7b' | 'f7b' | 'g7b' | 'h7b' |
+    'a6b' | 'b6b' | 'c6b' | 'd6b' | 'e6b' | 'f6b' | 'g6b' | 'h6b' |
+    'a5b' | 'b5b' | 'c5b' | 'd5b' | 'e5b' | 'f5b' | 'g5b' | 'h5b' |
+    'a4b' | 'b4b' | 'c4b' | 'd4b' | 'e4b' | 'f4b' | 'g4b' | 'h4b' |
+    'a3b' | 'b3b' | 'c3b' | 'd3b' | 'e3b' | 'f3b' | 'g3b' | 'h3b' |
+    'a2b' | 'b2b' | 'c2b' | 'd2b' | 'e2b' | 'f2b' | 'g2b' | 'h2b' |
+    'a1b' | 'b1b' | 'c1b' | 'd1b' | 'e1b' | 'f1b' | 'g1b' | 'h1b' |
+
+    'a8a' | 'b8a' | 'c8a' | 'd8a' | 'e8a' | 'f8a' | 'g8a' | 'h8a' |
+    'a7a' | 'b7a' | 'c7a' | 'd7a' | 'e7a' | 'f7a' | 'g7a' | 'h7a' |
+    'a6a' | 'b6a' | 'c6a' | 'd6a' | 'e6a' | 'f6a' | 'g6a' | 'h6a' |
+    'a5a' | 'b5a' | 'c5a' | 'd5a' | 'e5a' | 'f5a' | 'g5a' | 'h5a' |
+    'a4a' | 'b4a' | 'c4a' | 'd4a' | 'e4a' | 'f4a' | 'g4a' | 'h4a' |
+    'a3a' | 'b3a' | 'c3a' | 'd3a' | 'e3a' | 'f3a' | 'g3a' | 'h3a' |
+    'a2a' | 'b2a' | 'c2a' | 'd2a' | 'e2a' | 'f2a' | 'g2a' | 'h2a' |
+    'a1a' | 'b1a' | 'c1a' | 'd1a' | 'e1a' | 'f1a' | 'g1a' | 'h1a'
+
 
 export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
 
@@ -228,14 +293,77 @@ const FLAGS: Record<string, string> = {
 
 // prettier-ignore
 export const SQUARES: Square[] = [
-  'a8', 'b8', 'c8', 'd8', 'e8', 'f8', 'g8', 'h8',
-  'a7', 'b7', 'c7', 'd7', 'e7', 'f7', 'g7', 'h7',
-  'a6', 'b6', 'c6', 'd6', 'e6', 'f6', 'g6', 'h6',
-  'a5', 'b5', 'c5', 'd5', 'e5', 'f5', 'g5', 'h5',
-  'a4', 'b4', 'c4', 'd4', 'e4', 'f4', 'g4', 'h4',
-  'a3', 'b3', 'c3', 'd3', 'e3', 'f3', 'g3', 'h3',
-  'a2', 'b2', 'c2', 'd2', 'e2', 'f2', 'g2', 'h2',
-  'a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1'
+  'a8h', 'b8h', 'c8h', 'd8h', 'e8h', 'f8h', 'g8h', 'h8h',
+  'a7h', 'b7h', 'c7h', 'd7h', 'e7h', 'f7h', 'g7h', 'h7h',
+  'a6h', 'b6h', 'c6h', 'd6h', 'e6h', 'f6h', 'g6h', 'h6h',
+  'a5h', 'b5h', 'c5h', 'd5h', 'e5h', 'f5h', 'g5h', 'h5h',
+  'a4h', 'b4h', 'c4h', 'd4h', 'e4h', 'f4h', 'g4h', 'h4h',
+  'a3h', 'b3h', 'c3h', 'd3h', 'e3h', 'f3h', 'g3h', 'h3h',
+  'a2h', 'b2h', 'c2h', 'd2h', 'e2h', 'f2h', 'g2h', 'h2h',
+  'a1h', 'b1h', 'c1h', 'd1h', 'e1h', 'f1h', 'g1h', 'h1h',
+
+  'a8g', 'b8g', 'c8g', 'd8g', 'e8g', 'f8g', 'g8g', 'h8g',
+  'a7g', 'b7g', 'c7g', 'd7g', 'e7g', 'f7g', 'g7g', 'h7g',
+  'a6g', 'b6g', 'c6g', 'd6g', 'e6g', 'f6g', 'g6g', 'h6g',
+  'a5g', 'b5g', 'c5g', 'd5g', 'e5g', 'f5g', 'g5g', 'h5g',
+  'a4g', 'b4g', 'c4g', 'd4g', 'e4g', 'f4g', 'g4g', 'h4g',
+  'a3g', 'b3g', 'c3g', 'd3g', 'e3g', 'f3g', 'g3g', 'h3g',
+  'a2g', 'b2g', 'c2g', 'd2g', 'e2g', 'f2g', 'g2g', 'h2g',
+  'a1g', 'b1g', 'c1g', 'd1g', 'e1g', 'f1g', 'g1g', 'h1g',
+
+  'a8f', 'b8f', 'c8f', 'd8f', 'e8f', 'f8f', 'g8f', 'h8f',
+  'a7f', 'b7f', 'c7f', 'd7f', 'e7f', 'f7f', 'g7f', 'h7f',
+  'a6f', 'b6f', 'c6f', 'd6f', 'e6f', 'f6f', 'g6f', 'h6f',
+  'a5f', 'b5f', 'c5f', 'd5f', 'e5f', 'f5f', 'g5f', 'h5f',
+  'a4f', 'b4f', 'c4f', 'd4f', 'e4f', 'f4f', 'g4f', 'h4f',
+  'a3f', 'b3f', 'c3f', 'd3f', 'e3f', 'f3f', 'g3f', 'h3f',
+  'a2f', 'b2f', 'c2f', 'd2f', 'e2f', 'f2f', 'g2f', 'h2f',
+  'a1f', 'b1f', 'c1f', 'd1f', 'e1f', 'f1f', 'g1f', 'h1f',
+
+  'a8e', 'b8e', 'c8e', 'd8e', 'e8e', 'f8e', 'g8e', 'h8e',
+  'a7e', 'b7e', 'c7e', 'd7e', 'e7e', 'f7e', 'g7e', 'h7e',
+  'a6e', 'b6e', 'c6e', 'd6e', 'e6e', 'f6e', 'g6e', 'h6e',
+  'a5e', 'b5e', 'c5e', 'd5e', 'e5e', 'f5e', 'g5e', 'h5e',
+  'a4e', 'b4e', 'c4e', 'd4e', 'e4e', 'f4e', 'g4e', 'h4e',
+  'a3e', 'b3e', 'c3e', 'd3e', 'e3e', 'f3e', 'g3e', 'h3e',
+  'a2e', 'b2e', 'c2e', 'd2e', 'e2e', 'f2e', 'g2e', 'h2e',
+  'a1e', 'b1e', 'c1e', 'd1e', 'e1e', 'f1e', 'g1e', 'h1e',
+
+  'a8d', 'b8d', 'c8d', 'd8d', 'e8d', 'f8d', 'g8d', 'h8d',
+  'a7d', 'b7d', 'c7d', 'd7d', 'e7d', 'f7d', 'g7d', 'h7d',
+  'a6d', 'b6d', 'c6d', 'd6d', 'e6d', 'f6d', 'g6d', 'h6d',
+  'a5d', 'b5d', 'c5d', 'd5d', 'e5d', 'f5d', 'g5d', 'h5d',
+  'a4d', 'b4d', 'c4d', 'd4d', 'e4d', 'f4d', 'g4d', 'h4d',
+  'a3d', 'b3d', 'c3d', 'd3d', 'e3d', 'f3d', 'g3d', 'h3d',
+  'a2d', 'b2d', 'c2d', 'd2d', 'e2d', 'f2d', 'g2d', 'h2d',
+  'a1d', 'b1d', 'c1d', 'd1d', 'e1d', 'f1d', 'g1d', 'h1d',
+
+  'a8c', 'b8c', 'c8c', 'd8c', 'e8c', 'f8c', 'g8c', 'h8c',
+  'a7c', 'b7c', 'c7c', 'd7c', 'e7c', 'f7c', 'g7c', 'h7c',
+  'a6c', 'b6c', 'c6c', 'd6c', 'e6c', 'f6c', 'g6c', 'h6c',
+  'a5c', 'b5c', 'c5c', 'd5c', 'e5c', 'f5c', 'g5c', 'h5c',
+  'a4c', 'b4c', 'c4c', 'd4c', 'e4c', 'f4c', 'g4c', 'h4c',
+  'a3c', 'b3c', 'c3c', 'd3c', 'e3c', 'f3c', 'g3c', 'h3c',
+  'a2c', 'b2c', 'c2c', 'd2c', 'e2c', 'f2c', 'g2c', 'h2c',
+  'a1c', 'b1c', 'c1c', 'd1c', 'e1c', 'f1c', 'g1c', 'h1c',
+
+  'a8b', 'b8b', 'c8b', 'd8b', 'e8b', 'f8b', 'g8b', 'h8b',
+  'a7b', 'b7b', 'c7b', 'd7b', 'e7b', 'f7b', 'g7b', 'h7b',
+  'a6b', 'b6b', 'c6b', 'd6b', 'e6b', 'f6b', 'g6b', 'h6b',
+  'a5b', 'b5b', 'c5b', 'd5b', 'e5b', 'f5b', 'g5b', 'h5b',
+  'a4b', 'b4b', 'c4b', 'd4b', 'e4b', 'f4b', 'g4b', 'h4b',
+  'a3b', 'b3b', 'c3b', 'd3b', 'e3b', 'f3b', 'g3b', 'h3b',
+  'a2b', 'b2b', 'c2b', 'd2b', 'e2b', 'f2b', 'g2b', 'h2b',
+  'a1b', 'b1b', 'c1b', 'd1b', 'e1b', 'f1b', 'g1b', 'h1b',
+
+  'a8a', 'b8a', 'c8a', 'd8a', 'e8a', 'f8a', 'g8a', 'h8a',
+  'a7a', 'b7a', 'c7a', 'd7a', 'e7a', 'f7a', 'g7a', 'h7a',
+  'a6a', 'b6a', 'c6a', 'd6a', 'e6a', 'f6a', 'g6a', 'h6a',
+  'a5a', 'b5a', 'c5a', 'd5a', 'e5a', 'f5a', 'g5a', 'h5a',
+  'a4a', 'b4a', 'c4a', 'd4a', 'e4a', 'f4a', 'g4a', 'h4a',
+  'a3a', 'b3a', 'c3a', 'd3a', 'e3a', 'f3a', 'g3a', 'h3a',
+  'a2a', 'b2a', 'c2a', 'd2a', 'e2a', 'f2a', 'g2a', 'h2a',
+  'a1a', 'b1a', 'c1a', 'd1a', 'e1a', 'f1a', 'g1a', 'h1a',
 ]
 
 const BITS: Record<string, number> = {
@@ -306,25 +434,25 @@ const HEADER_TEMPLATE = {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 /*
- * NOTES ABOUT 0x88 MOVE GENERATION ALGORITHM
+ * NOTES ABOUT 0x888 MOVE GENERATION ALGORITHM
  * ----------------------------------------------------------------------------
  * From https://github.com/jhlywa/chess.js/issues/230
  *
  * A lot of people are confused when they first see the internal representation
- * of chess.js. It uses the 0x88 Move Generation Algorithm which internally
+ * of chess.js. It uses the 0x888 Move Generation Algorithm which internally
  * stores the board as an 8x16 array. This is purely for efficiency but has a
  * couple of interesting benefits:
  *
- * 1. 0x88 offers a very inexpensive "off the board" check. Bitwise AND (&) any
- *    square with 0x88, if the result is non-zero then the square is off the
- *    board. For example, assuming a knight square A8 (0 in 0x88 notation),
+ * 1. 0x888 offers a very inexpensive "off the board" check. Bitwise AND (&) any
+ *    square with 0x888, if the result is non-zero then the square is off the
+ *    board. For example, assuming a knight square A8 (0 in 0x888 notation),
  *    there are 8 possible directions in which the knight can move. These
  *    directions are relative to the 8x16 board and are stored in the
  *    PIECE_OFFSETS map. One possible move is A8 - 18 (up one square, and two
- *    squares to the left - which is off the board). 0 - 18 = -18 & 0x88 = 0x88
+ *    squares to the left - which is off the board). 0 - 18 = -18 & 0x888 = 0x888
  *    (because of two-complement representation of -18). The non-zero result
  *    means the square is off the board and the move is illegal. Take the
- *    opposite move (from A8 to C7), 0 + 18 = 18 & 0x88 = 0. A result of zero
+ *    opposite move (from A8 to C7), 0 + 18 = 18 & 0x888 = 0. A result of zero
  *    means the square is on the board.
  *
  * 2. The relative distance (or difference) between two squares on a 8x16 board
@@ -346,16 +474,23 @@ const HEADER_TEMPLATE = {
 
 // prettier-ignore
 // eslint-disable-next-line
-const Ox88: Record<Square, number> = {
-  a8:   0, b8:   1, c8:   2, d8:   3, e8:   4, f8:   5, g8:   6, h8:   7,
-  a7:  16, b7:  17, c7:  18, d7:  19, e7:  20, f7:  21, g7:  22, h7:  23,
-  a6:  32, b6:  33, c6:  34, d6:  35, e6:  36, f6:  37, g6:  38, h6:  39,
-  a5:  48, b5:  49, c5:  50, d5:  51, e5:  52, f5:  53, g5:  54, h5:  55,
-  a4:  64, b4:  65, c4:  66, d4:  67, e4:  68, f4:  69, g4:  70, h4:  71,
-  a3:  80, b3:  81, c3:  82, d3:  83, e3:  84, f3:  85, g3:  86, h3:  87,
-  a2:  96, b2:  97, c2:  98, d2:  99, e2: 100, f2: 101, g2: 102, h2: 103,
-  a1: 112, b1: 113, c1: 114, d1: 115, e1: 116, f1: 117, g1: 118, h1: 119
-}
+const Ox888: Record<Square, number> = (() => {
+  const map = {} as Record<Square, number>
+  const files = 'abcdefgh'
+  const ranks = '87654321'
+  const layers = 'abcdefgh'
+  for (let l = 0; l < 8; l++) {
+    for (let r = 0; r < 8; r++) {
+      for (let f = 0; f < 8; f++) {
+        const base0x88 = (r << 4) | f
+        const idx = base0x88 + l * 128
+        const key = `${files[f]}${ranks[r]}${layers[l]}` as Square
+        map[key] = idx
+      }
+    }
+  }
+  return map
+})()
 
 const PAWN_OFFSETS = {
   b: [16, 32, 17, 15],
@@ -432,12 +567,12 @@ const SIDES = {
 
 const ROOKS = {
   w: [
-    { square: Ox88.a1, flag: BITS.QSIDE_CASTLE },
-    { square: Ox88.h1, flag: BITS.KSIDE_CASTLE },
+    { square: Ox888.a1a, flag: BITS.QSIDE_CASTLE },
+    { square: Ox888.h1a, flag: BITS.KSIDE_CASTLE },
   ],
   b: [
-    { square: Ox88.a8, flag: BITS.QSIDE_CASTLE },
-    { square: Ox88.h8, flag: BITS.KSIDE_CASTLE },
+    { square: Ox888.a8h, flag: BITS.QSIDE_CASTLE },
+    { square: Ox888.h8h, flag: BITS.KSIDE_CASTLE },
   ],
 }
 
@@ -445,13 +580,15 @@ const SECOND_RANK = { b: RANK_7, w: RANK_2 }
 
 const SAN_NULLMOVE = '--'
 
-// Extracts the zero-based rank of an 0x88 square.
+// Extracts the zero-based rank of an 0x888 square.
 function rank(square: number): number {
-  return square >> 4
+  // rank within 0x88 layer (0..7)
+  return (square & 0x7f) >> 4
 }
 
-// Extracts the zero-based file of an 0x88 square.
+// Extracts the zero-based file of an 0x888 square.
 function file(square: number): number {
+  // file within 0x88 layer (0..7)
   return square & 0xf
 }
 
@@ -459,12 +596,16 @@ function isDigit(c: string): boolean {
   return '0123456789'.indexOf(c) !== -1
 }
 
-// Converts a 0x88 square to algebraic notation.
+// Converts a 0x888 square (with 3D layer stride 128) to algebraic notation.
 function algebraic(square: number): Square {
   const f = file(square)
   const r = rank(square)
-  return ('abcdefgh'.substring(f, f + 1) +
-    '87654321'.substring(r, r + 1)) as Square
+  const l = Math.floor(square / 128)
+  return (
+    'abcdefgh'.substring(f, f + 1) +
+    '87654321'.substring(r, r + 1) +
+    'abcdefgh'.substring(l, l + 1)
+  ) as Square
 }
 
 function swapColor(color: Color): Color {
@@ -708,7 +849,7 @@ function strippedSan(move: string): string {
 }
 
 export class Chess {
-  private _board = new Array<Piece>(128)
+  private _board = new Array<Piece>(1024)
   private _turn: Color = WHITE
   private _header: Record<string, string | null> = {}
   private _kings: Record<Color, number> = { w: EMPTY, b: EMPTY }
@@ -733,7 +874,7 @@ export class Chess {
   }
 
   clear({ preserveHeaders = false } = {}) {
-    this._board = new Array<Piece>(128)
+    this._board = new Array<Piece>(1024)
     this._kings = { w: EMPTY, b: EMPTY }
     this._turn = WHITE
     this._castling = { w: 0, b: 0 }
@@ -811,7 +952,7 @@ export class Chess {
       this._castling.b |= BITS.QSIDE_CASTLE
     }
 
-    this._epSquare = tokens[3] === '-' ? EMPTY : Ox88[tokens[3] as Square]
+    this._epSquare = tokens[3] === '-' ? EMPTY : Ox888[tokens[3] as Square]
     this._fenEpSquare = this._epSquare
     this._halfMoves = parseInt(tokens[4], 10)
     this._moveNumber = parseInt(tokens[5], 10)
@@ -827,7 +968,7 @@ export class Chess {
     let empty = 0
     let fen = ''
 
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
       if (this._board[i]) {
         if (empty > 0) {
           fen += empty
@@ -840,12 +981,12 @@ export class Chess {
         empty++
       }
 
-      if ((i + 1) & 0x88) {
+      if ((i + 1) & 0x888) {
         if (empty > 0) {
           fen += empty
         }
 
-        if (i !== Ox88.h1) {
+        if (i !== Ox888.h1h) {
           fen += '/'
         }
 
@@ -885,7 +1026,7 @@ export class Chess {
 
         for (const square of squares) {
           // is the square off the board?
-          if (square & 0x88) {
+          if (square & 0x888) {
             continue
           }
 
@@ -964,9 +1105,9 @@ export class Chess {
   private _computeHash() {
     let hash = 0n
 
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
       // did we run off the end of the board
-      if (i & 0x88) {
+      if (i & 0x888) {
         i += 7
         continue
       }
@@ -1011,14 +1152,14 @@ export class Chess {
   }
 
   get(square: Square): Piece | undefined {
-    return this._board[Ox88[square]]
+    return this._board[Ox888[square]]
   }
 
   findPiece(piece: Piece): Square[] {
     const squares: Square[] = []
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
       // did we run off the end of the board
-      if (i & 0x88) {
+      if (i & 0x888) {
         i += 7
         continue
       }
@@ -1069,11 +1210,11 @@ export class Chess {
     }
 
     // check for valid square
-    if (!(square in Ox88)) {
+    if (!(square in Ox888)) {
       return false
     }
 
-    const sq = Ox88[square]
+    const sq = Ox888[square]
 
     // don't let the user place more than one king
     if (
@@ -1106,7 +1247,7 @@ export class Chess {
 
   remove(square: Square): Piece | undefined {
     const piece = this.get(square)
-    this._clear(Ox88[square])
+    this._clear(Ox888[square])
     if (piece && piece.type === KING) {
       this._kings[piece.color] = EMPTY
     }
@@ -1122,40 +1263,40 @@ export class Chess {
     this._hash ^= this._castlingKey()
 
     const whiteKingInPlace =
-      this._board[Ox88.e1]?.type === KING &&
-      this._board[Ox88.e1]?.color === WHITE
+      this._board[Ox888.e1a]?.type === KING &&
+      this._board[Ox888.e1a]?.color === WHITE
     const blackKingInPlace =
-      this._board[Ox88.e8]?.type === KING &&
-      this._board[Ox88.e8]?.color === BLACK
+      this._board[Ox888.e8h]?.type === KING &&
+      this._board[Ox888.e8h]?.color === BLACK
 
     if (
       !whiteKingInPlace ||
-      this._board[Ox88.a1]?.type !== ROOK ||
-      this._board[Ox88.a1]?.color !== WHITE
+      this._board[Ox888.a1a]?.type !== ROOK ||
+      this._board[Ox888.a1a]?.color !== WHITE
     ) {
       this._castling.w &= ~BITS.QSIDE_CASTLE
     }
 
     if (
       !whiteKingInPlace ||
-      this._board[Ox88.h1]?.type !== ROOK ||
-      this._board[Ox88.h1]?.color !== WHITE
+      this._board[Ox888.h1a]?.type !== ROOK ||
+      this._board[Ox888.h1a]?.color !== WHITE
     ) {
       this._castling.w &= ~BITS.KSIDE_CASTLE
     }
 
     if (
       !blackKingInPlace ||
-      this._board[Ox88.a8]?.type !== ROOK ||
-      this._board[Ox88.a8]?.color !== BLACK
+      this._board[Ox888.a8h]?.type !== ROOK ||
+      this._board[Ox888.a8h]?.color !== BLACK
     ) {
       this._castling.b &= ~BITS.QSIDE_CASTLE
     }
 
     if (
       !blackKingInPlace ||
-      this._board[Ox88.h8]?.type !== ROOK ||
-      this._board[Ox88.h8]?.color !== BLACK
+      this._board[Ox888.h8h]?.type !== ROOK ||
+      this._board[Ox888.h8h]?.color !== BLACK
     ) {
       this._castling.b &= ~BITS.KSIDE_CASTLE
     }
@@ -1184,7 +1325,7 @@ export class Chess {
     }
 
     const canCapture = (square: number) =>
-      !(square & 0x88) &&
+      !(square & 0x888) &&
       this._board[square]?.color === this._turn &&
       this._board[square]?.type === PAWN
 
@@ -1199,9 +1340,9 @@ export class Chess {
   private _attacked(color: Color, square: number, verbose: true): Square[]
   private _attacked(color: Color, square: number, verbose?: boolean) {
     const attackers: Square[] = []
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
       // did we run off the end of the board
-      if (i & 0x88) {
+      if (i & 0x888) {
         i += 7
         continue
       }
@@ -1278,9 +1419,9 @@ export class Chess {
 
   attackers(square: Square, attackedBy?: Color): Square[] {
     if (!attackedBy) {
-      return this._attacked(this._turn, Ox88[square], true)
+      return this._attacked(this._turn, Ox888[square], true)
     } else {
-      return this._attacked(attackedBy, Ox88[square], true)
+      return this._attacked(attackedBy, Ox888[square], true)
     }
   }
 
@@ -1294,7 +1435,7 @@ export class Chess {
   }
 
   isAttacked(square: Square, attackedBy: Color): boolean {
-    return this._attacked(attackedBy, Ox88[square])
+    return this._attacked(attackedBy, Ox888[square])
   }
 
   isCheck(): boolean {
@@ -1333,9 +1474,9 @@ export class Chess {
     let numPieces = 0
     let squareColor = 0
 
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
       squareColor = (squareColor + 1) % 2
-      if (i & 0x88) {
+      if (i & 0x888) {
         i += 7
         continue
       }
@@ -1397,7 +1538,7 @@ export class Chess {
 
   isPromotion({ from, to }: { from: Square; to: Square }): boolean {
     return this._moves({ square: from, piece: 'p' }).some(
-      (move) => move.to === Ox88[to] && move.promotion,
+      (move) => move.to === Ox888[to] && move.promotion,
     )
   }
 
@@ -1498,24 +1639,24 @@ export class Chess {
     const us = this._turn
     const them = swapColor(us)
 
-    let firstSquare = Ox88.a8
-    let lastSquare = Ox88.h1
+    let firstSquare = Ox888.a8a
+    let lastSquare = Ox888.h1h
     let singleSquare = false
 
     // are we generating moves for a single square?
     if (forSquare) {
       // illegal square, return empty moves
-      if (!(forSquare in Ox88)) {
+      if (!(forSquare in Ox888)) {
         return []
       } else {
-        firstSquare = lastSquare = Ox88[forSquare]
+        firstSquare = lastSquare = Ox888[forSquare]
         singleSquare = true
       }
     }
 
     for (let from = firstSquare; from <= lastSquare; from++) {
       // did we run off the end of the board
-      if (from & 0x88) {
+      if (from & 0x888) {
         from += 7
         continue
       }
@@ -1545,7 +1686,7 @@ export class Chess {
         // pawn captures
         for (let j = 2; j < 4; j++) {
           to = from + PAWN_OFFSETS[us][j]
-          if (to & 0x88) continue
+          if (to & 0x888) continue
 
           if (this._board[to]?.color === them) {
             addMove(
@@ -1570,7 +1711,7 @@ export class Chess {
 
           while (true) {
             to += offset
-            if (to & 0x88) break
+            if (to & 0x888) break
 
             if (!this._board[to]) {
               addMove(moves, us, from, to, type)
@@ -1866,10 +2007,10 @@ export class Chess {
       this._fenEpSquare = epSquare
 
       if (
-        (!((move.to - 1) & 0x88) &&
+        (!((move.to - 1) & 0x888) &&
           this._board[move.to - 1]?.type === PAWN &&
           this._board[move.to - 1]?.color === them) ||
-        (!((move.to + 1) & 0x88) &&
+        (!((move.to + 1) & 0x888) &&
           this._board[move.to + 1]?.type === PAWN &&
           this._board[move.to + 1]?.color === them)
       ) {
@@ -2273,7 +2414,7 @@ export class Chess {
   }
 
   /*
-   * Convert a move from 0x88 coordinates to Standard Algebraic Notation
+   * Convert a move from 0x888 coordinates to Standard Algebraic Notation
    * (SAN)
    *
    * @param {boolean} strict Use the strict SAN parser. It will throw errors
@@ -2326,7 +2467,7 @@ export class Chess {
     return output
   }
 
-  // convert a move from Standard Algebraic Notation (SAN) to 0x88 coordinates
+  // convert a move from Standard Algebraic Notation (SAN) to 0x888 coordinates
   private _moveFromSan(move: string, strict = false): InternalMove | null {
     // strip off any move decorations: e.g Nf3+?! becomes Nf3
     let cleanMove = strippedSan(move)
@@ -2451,8 +2592,8 @@ export class Chess {
         // hand-compare move properties with the results from our permissive regex
       } else if (
         (!piece || piece.toLowerCase() == moves[i].piece) &&
-        Ox88[from] == moves[i].from &&
-        Ox88[to] == moves[i].to &&
+        Ox888[from] == moves[i].from &&
+        Ox888[to] == moves[i].to &&
         (!promotion || promotion.toLowerCase() == moves[i].promotion)
       ) {
         return moves[i]
@@ -2465,7 +2606,7 @@ export class Chess {
         const square = algebraic(moves[i].from)
         if (
           (!piece || piece.toLowerCase() == moves[i].piece) &&
-          Ox88[to] == moves[i].to &&
+          Ox888[to] == moves[i].to &&
           (from == square[0] || from == square[1]) &&
           (!promotion || promotion.toLowerCase() == moves[i].promotion)
         ) {
@@ -2479,7 +2620,7 @@ export class Chess {
 
   ascii(): string {
     let s = '   +------------------------+\n'
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
       // display the rank
       if (file(i) === 0) {
         s += ' ' + '87654321'[rank(i)] + ' |'
@@ -2495,7 +2636,7 @@ export class Chess {
         s += ' . '
       }
 
-      if ((i + 1) & 0x88) {
+      if ((i + 1) & 0x888) {
         s += '|\n'
         i += 8
       }
@@ -2543,7 +2684,7 @@ export class Chess {
     const output = []
     let row = []
 
-    for (let i = Ox88.a8; i <= Ox88.h1; i++) {
+    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
       if (this._board[i] == null) {
         row.push(null)
       } else {
@@ -2553,7 +2694,7 @@ export class Chess {
           color: this._board[i].color,
         })
       }
-      if ((i + 1) & 0x88) {
+      if ((i + 1) & 0x888) {
         output.push(row)
         row = []
         i += 8
@@ -2564,8 +2705,8 @@ export class Chess {
   }
 
   squareColor(square: Square): 'light' | 'dark' | null {
-    if (square in Ox88) {
-      const sq = Ox88[square]
+    if (square in Ox888) {
+      const sq = Ox888[square]
       return (rank(sq) + file(sq)) % 2 === 0 ? 'light' : 'dark'
     }
 

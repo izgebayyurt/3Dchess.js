@@ -477,13 +477,12 @@ const HEADER_TEMPLATE = {
 const Ox888: Record<Square, number> = (() => {
   const map = {} as Record<Square, number>
   const files = 'abcdefgh'
-  const ranks = '87654321'
+  const ranks = '12345678'
   const layers = 'abcdefgh'
   for (let l = 0; l < 8; l++) {
     for (let r = 0; r < 8; r++) {
       for (let f = 0; f < 8; f++) {
-        const base0x88 = (r << 4) | f
-        const idx = base0x88 + l * 128
+        const idx = f + r * 16 + l * 128
         const key = `${files[f]}${ranks[r]}${layers[l]}` as Square
         map[key] = idx
       }
@@ -749,16 +748,12 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
       }
     }
   } else {
-    // 64 rows: check edge ranks within each layer (rows 8*l+0 and 8*l+7)
-    for (let l = 0; l < 8; l++) {
-      const bottom = rows[l * 8]
-      const top = rows[l * 8 + 7]
-      if (Array.from(bottom + top).some((c) => c.toUpperCase() === 'P')) {
+    // check edge ranks where non-pawns sit (rows 1 and 64)
+      if (Array.from(rows[0] + rows[63]).some((c) => c.toUpperCase() === 'P')) {
         return {
           ok: false,
           error: 'Invalid FEN: some pawns are on the edge rows',
         }
-      }
     }
   }
 
@@ -966,7 +961,7 @@ export class Chess {
     const rows = position.split('/')
 
     if (rows.length === 8) {
-      // Legacy 2D-style rows (assumed to describe layer 'a', from a8a..h1a)
+      // Legacy 2D-style rows (assumed to describe layer 'a', from a1a..h8a)
       let square = 0
       for (let i = 0; i < position.length; i++) {
         const ch = position.charAt(i)
@@ -1180,7 +1175,7 @@ export class Chess {
   private _computeHash() {
     let hash = 0n
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
       // did we run off the end of the board
       if (i & 0x888) {
         i += 7
@@ -1232,9 +1227,13 @@ export class Chess {
 
   findPiece(piece: Piece): Square[] {
     const squares: Square[] = []
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
-      // did we run off the end of the board
-      if (i & 0x888) {
+    for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
+      // did we run off the end of the board?
+      if (i & 0x080) {
+        i += 63
+        continue
+      }
+      else if (i & 0x008) {
         i += 7
         continue
       }
@@ -1416,18 +1415,23 @@ export class Chess {
   private _attacked(color: Color, square: number, verbose?: boolean) {
     const attackers: Square[] = []
 
-    const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a8a && sq <= Ox888.h1h
+    const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a1a && sq <= Ox888.h8h
 
     const ROOK_DIRS = [-16, 1, 16, -1, 128, -128]
     const BISHOP_DIRS = [-17, -15, 17, 15, 129, 127, -129, -127, 144, 112, -144, -112]
     const QUEEN_DIRS = ROOK_DIRS.concat(BISHOP_DIRS)
     const KING_DIRS = QUEEN_DIRS
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
-      if (i & 0x888) {
+    for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
+      if (i & 0x080) {
+        i += 63
+        continue
+      }
+      else if (i & 0x008) {
         i += 7
         continue
       }
+      console.log(i)
       const p = this._board[i]
       if (!p || p.color !== color) continue
       if (i === square) continue
@@ -1558,9 +1562,13 @@ export class Chess {
     let numPieces = 0
     let squareColor = 0
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
       squareColor = (squareColor + 1) % 2
-      if (i & 0x888) {
+      if (i & 0x080) {
+        i += 63
+        continue
+      }
+      else if (i & 0x008) {
         i += 7
         continue
       }
@@ -1723,8 +1731,8 @@ export class Chess {
     const us = this._turn
     const them = swapColor(us)
 
-    let firstSquare = Ox888.a8a
-    let lastSquare = Ox888.h1h
+    let firstSquare = Ox888.a1a
+    let lastSquare = Ox888.h8h
     let singleSquare = false
 
     // are we generating moves for a single square?
@@ -1757,13 +1765,13 @@ export class Chess {
 
         // single square forward, non-capturing (rank direction)
         to = from + PAWN_OFFSETS[us][0]
-        if (!(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
+        if (!(to & 0x888) && to >= Ox888.a1a && to <= Ox888.h8h && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
 
           // double square forward (only from second rank on same layer)
           to = from + PAWN_OFFSETS[us][1]
           if (
-            !(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h &&
+            !(to & 0x888) && to >= Ox888.a1a && to <= Ox888.h8h &&
             SECOND_RANK[us] === rank(from) && !this._board[to]
           ) {
             addMove(moves, us, from, to, PAWN, undefined, BITS.BIG_PAWN)
@@ -1772,7 +1780,7 @@ export class Chess {
 
         // single square upward (layer direction), non-capturing
         to = from + PAWN_OFFSETS[us][4]
-        if (to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
+        if (to >= Ox888.a1a && to <= Ox888.h8h && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
         }
 
@@ -1799,7 +1807,7 @@ export class Chess {
         // pawn captures upward-diagonals (on file/layer plane)
         for (let j = 5; j < 7; j++) {
           to = from + PAWN_OFFSETS[us][j]
-          if (to < Ox888.a8a || to > Ox888.h1h) continue
+          if (to < Ox888.a1a || to > Ox888.h8h) continue
 
           if (this._board[to]?.color === them) {
             addMove(
@@ -1823,7 +1831,7 @@ export class Chess {
           while (true) {
             to += offset
             // off the board in-layer or by leaving layer bounds
-            if ((to & 0x888) || to < Ox888.a8a || to > Ox888.h1h) break
+            if ((to & 0x888) || to < Ox888.a1a || to > Ox888.h8h) break
 
             if (!this._board[to]) {
               addMove(moves, us, from, to, type)
@@ -2728,7 +2736,7 @@ export class Chess {
 
   ascii(): string {
     let s = '   +------------------------+\n'
-    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
+    for (let i = Ox888.a1a; i <= Ox888.h8a; i++) {
       // display the rank
       if (file(i) === 0) {
         s += ' ' + '87654321'[rank(i)] + ' |'
@@ -2792,7 +2800,7 @@ export class Chess {
     const output = []
     let row = []
 
-    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
+    for (let i = Ox888.a1a; i <= Ox888.h8a; i++) {
       if (this._board[i] == null) {
         row.push(null)
       } else {

@@ -161,7 +161,7 @@ export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
 export type Suffix = (typeof SUFFIX_LIST)[number]
 
 export const DEFAULT_POSITION =
-  'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  'RNBQKBNR/PPPPPPPP/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1'
 
 export type Piece = {
   color: Color
@@ -493,16 +493,29 @@ const Ox888: Record<Square, number> = (() => {
 })()
 
 const PAWN_OFFSETS = {
-  b: [16, 32, 17, 15],
-  w: [-16, -32, -17, -15],
+  // forward, double-forward, capture-right, capture-left, up, double-up, up-capture-right, up-capture-left
+  b: [16, 32, 17, 15, -128, -256, -127, -129],
+  w: [-16, -32, -17, -15, 128, 256, 129, 127],
 }
 
 const PIECE_OFFSETS = {
-  n: [-18, -33, -31, -14, 18, 33, 31, 14],
-  b: [-17, -15, 17, 15],
-  r: [-16, 1, 16, -1],
-  q: [-17, -16, -15, 1, 17, 16, 15, -1],
-  k: [-17, -16, -15, 1, 17, 16, 15, -1],
+  // Knights move in L-shapes on any of the 3 orthogonal planes
+  n: [
+    // file-rank plane (classic)
+    -18, -33, -31, -14, 18, 33, 31, 14,
+    // file-layer plane
+    257, 255, 130, 126, -257, -255, -130, -126,
+    // rank-layer plane
+    272, 240, 160, 96, -272, -240, -160, -96,
+  ],
+  // Bishops move diagonally on any of the 3 planes
+  b: [-17, -15, 17, 15, 129, 127, -129, -127, 144, 112, -144, -112],
+  // Rooks move orthogonally along files, ranks, or layers
+  r: [-16, 1, 16, -1, 128, -128],
+  // Queens combine rook and bishop directions
+  q: [-17, -16, -15, 1, 17, 16, 15, -1, 128, -128, 129, 127, -129, -127, 144, 112, -144, -112],
+  // Kings move one step in any queen direction (loop will break after one step)
+  k: [-17, -16, -15, 1, 17, 16, 15, -1, 128, -128, 129, 127, -129, -127, 144, 112, -144, -112],
 }
 
 // prettier-ignore
@@ -565,6 +578,8 @@ const SIDES = {
   [QUEEN]: BITS.QSIDE_CASTLE,
 }
 
+// Default ROOKS map kept for backward compatibility when default setup matches classic corners.
+// Runtime code uses per-instance dynamic detection based on loaded position.
 const ROOKS = {
   w: [
     { square: Ox888.a1a, flag: BITS.QSIDE_CASTLE },
@@ -641,8 +656,8 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
     }
   }
 
-  // 4th criterion: 4th field is a valid e.p.-string?
-  if (!/^(-|[abcdefgh][36])$/.test(tokens[3])) {
+  // 4th criterion: 4th field is a valid e.p.-string? (3D: file + rank (3|6) + layer)
+  if (!/^(-|[abcdefgh][36][a-h])$/.test(tokens[3])) {
     return { ok: false, error: 'Invalid FEN: en-passant square is invalid' }
   }
 
@@ -656,12 +671,13 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
     return { ok: false, error: 'Invalid FEN: side-to-move is invalid' }
   }
 
-  // 7th criterion: 1st field contains 8 rows?
+  // 7th criterion: 1st field contains either 8 (legacy) or 64 (3D) rows
   const rows = tokens[0].split('/')
-  if (rows.length !== 8) {
+  if (rows.length !== 8 && rows.length !== 64) {
     return {
       ok: false,
-      error: "Invalid FEN: piece data does not contain 8 '/'-delimited rows",
+      error:
+        "Invalid FEN: piece data must contain 8 or 64 '/'-delimited rows",
     }
   }
 
@@ -725,12 +741,24 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
   }
 
   // 11th criterion: are any pawns on the first or eighth rows?
-  if (
-    Array.from(rows[0] + rows[7]).some((char) => char.toUpperCase() === 'P')
-  ) {
-    return {
-      ok: false,
-      error: 'Invalid FEN: some pawns are on the edge rows',
+  if (rows.length === 8) {
+    if (Array.from(rows[0] + rows[7]).some((char) => char.toUpperCase() === 'P')) {
+      return {
+        ok: false,
+        error: 'Invalid FEN: some pawns are on the edge rows',
+      }
+    }
+  } else {
+    // 64 rows: check edge ranks within each layer (rows 8*l+0 and 8*l+7)
+    for (let l = 0; l < 8; l++) {
+      const bottom = rows[l * 8]
+      const top = rows[l * 8 + 7]
+      if (Array.from(bottom + top).some((c) => c.toUpperCase() === 'P')) {
+        return {
+          ok: false,
+          error: 'Invalid FEN: some pawns are on the edge rows',
+        }
+      }
     }
   }
 
@@ -801,8 +829,16 @@ function addMove(
   flags: number = BITS.NORMAL,
 ) {
   const r = rank(to)
+  const l = Math.floor(to / 128)
 
-  if (piece === PAWN && (r === RANK_1 || r === RANK_8)) {
+  // promotion if reaching last rank OR last layer (white: rank 8 or layer h; black: rank 1 or layer a)
+  const promote =
+    piece === PAWN && (
+      (color === WHITE && (r === RANK_8 || l === 7)) ||
+      (color === BLACK && (r === RANK_1 || l === 0))
+    )
+
+  if (promote) {
     for (let i = 0; i < PROMOTIONS.length; i++) {
       const promotion = PROMOTIONS[i]
       moves.push({
@@ -861,6 +897,12 @@ export class Chess {
   private _comments: Record<string, string> = {}
   private _suffixes: Record<string, Suffix> = {}
   private _castling: Record<Color, number> = { w: 0, b: 0 }
+  // dynamic castling home squares detected from the loaded position
+  private _kingStart: Record<Color, number> = { w: EMPTY, b: EMPTY }
+  private _rookStart: Record<Color, { square: number; flag: number }[]> = {
+    w: [],
+    b: [],
+  }
 
   private _hash = 0n
 
@@ -876,6 +918,8 @@ export class Chess {
   clear({ preserveHeaders = false } = {}) {
     this._board = new Array<Piece>(1024)
     this._kings = { w: EMPTY, b: EMPTY }
+    this._kingStart = { w: EMPTY, b: EMPTY }
+    this._rookStart = { w: [], b: [] }
     this._turn = WHITE
     this._castling = { w: 0, b: 0 }
     this._epSquare = EMPTY
@@ -916,24 +960,53 @@ export class Chess {
     }
 
     const position = tokens[0]
-    let square = 0
 
     this.clear({ preserveHeaders })
 
-    for (let i = 0; i < position.length; i++) {
-      const piece = position.charAt(i)
+    const rows = position.split('/')
 
-      if (piece === '/') {
-        square += 8
-      } else if (isDigit(piece)) {
-        square += parseInt(piece, 10)
-      } else {
-        const color = piece < 'a' ? WHITE : BLACK
-        this._put(
-          { type: piece.toLowerCase() as PieceSymbol, color },
-          algebraic(square),
-        )
-        square++
+    if (rows.length === 8) {
+      // Legacy 2D-style rows (assumed to describe layer 'a', from a8a..h1a)
+      let square = 0
+      for (let i = 0; i < position.length; i++) {
+        const ch = position.charAt(i)
+        if (ch === '/') {
+          square += 8
+        } else if (isDigit(ch)) {
+          square += parseInt(ch, 10)
+        } else {
+          const color = ch < 'a' ? WHITE : BLACK
+          this._put(
+            { type: ch.toLowerCase() as PieceSymbol, color },
+            algebraic(square),
+          )
+          square++
+        }
+      }
+    } else {
+      // 64 rows: for each layer a..h, rows from a1x..h1x up to a8x..h8x
+      // Iterate layers l = 0..7 (a..h)
+      let rowIndex = 0
+      for (let l = 0; l < 8; l++) {
+        for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
+          const row = rows[rowIndex++]
+          let fileIdx = 0
+          for (let k = 0; k < row.length; k++) {
+            const ch = row[k]
+            if (isDigit(ch)) {
+              fileIdx += parseInt(ch, 10)
+            } else {
+              const color = ch < 'a' ? WHITE : BLACK
+              const rIndex = 7 - rankFromBottom // convert bottom-up to 0x88 rank index
+              const sq = ((rIndex << 4) | fileIdx) + l * 128
+              this._set(sq, { type: ch.toLowerCase() as PieceSymbol, color })
+              if (ch.toLowerCase() === KING) {
+                this._kings[color] = sq
+              }
+              fileIdx += 1
+            }
+          }
+        }
       }
     }
 
@@ -952,6 +1025,11 @@ export class Chess {
       this._castling.b |= BITS.QSIDE_CASTLE
     }
 
+    // initialize dynamic castling anchors based on loaded position
+    this._initCastlingStart()
+    // ensure rights are consistent with actual pieces
+    this._updateCastlingRights()
+
     this._epSquare = tokens[3] === '-' ? EMPTY : Ox888[tokens[3] as Square]
     this._fenEpSquare = this._epSquare
     this._halfMoves = parseInt(tokens[4], 10)
@@ -965,33 +1043,30 @@ export class Chess {
   fen({
     forceEnpassantSquare = false,
   }: { forceEnpassantSquare?: boolean } = {}) {
-    let empty = 0
     let fen = ''
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
-      if (this._board[i]) {
-        if (empty > 0) {
-          fen += empty
-          empty = 0
+    // 3D FEN output: layers a..h, each with rows a1x..h1x up to a8x..h8x
+    for (let l = 0; l < 8; l++) {
+      for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
+        let empty = 0
+        const rIndex = 7 - rankFromBottom
+        for (let f = 0; f < 8; f++) {
+          const i = ((rIndex << 4) | f) + l * 128
+          const piece = this._board[i]
+          if (piece) {
+            if (empty > 0) {
+              fen += empty
+              empty = 0
+            }
+            const symbol = piece.color === WHITE ? piece.type.toUpperCase() : piece.type.toLowerCase()
+            fen += symbol
+          } else {
+            empty++
+          }
         }
-        const { color, type: piece } = this._board[i]
-
-        fen += color === WHITE ? piece.toUpperCase() : piece.toLowerCase()
-      } else {
-        empty++
-      }
-
-      if ((i + 1) & 0x888) {
-        if (empty > 0) {
-          fen += empty
-        }
-
-        if (i !== Ox888.h1h) {
-          fen += '/'
-        }
-
-        empty = 0
-        i += 8
+        if (empty > 0) fen += empty
+        // add row separator except after the last row of the last layer
+        if (!(l === 7 && rankFromBottom === 7)) fen += '/'
       }
     }
 
@@ -1259,46 +1334,46 @@ export class Chess {
     return piece
   }
 
+  private _initCastlingStart() {
+    // Determine starting king squares and corner rook squares on that row/layer
+    const compute = (color: Color) => {
+      const ks = this._kings[color]
+      this._kingStart[color] = ks
+      const list: { square: number; flag: number }[] = []
+      if (ks !== EMPTY) {
+        const layerBase = Math.floor(ks / 128) * 128
+        const rIdx = rank(ks)
+        const left = (rIdx << 4) + 0 + layerBase
+        const right = (rIdx << 4) + 7 + layerBase
+        if (this._board[left]?.type === ROOK && this._board[left]?.color === color) {
+          list.push({ square: left, flag: BITS.QSIDE_CASTLE })
+        }
+        if (this._board[right]?.type === ROOK && this._board[right]?.color === color) {
+          list.push({ square: right, flag: BITS.KSIDE_CASTLE })
+        }
+      }
+      this._rookStart[color] = list
+    }
+    compute(WHITE)
+    compute(BLACK)
+  }
+
   private _updateCastlingRights() {
     this._hash ^= this._castlingKey()
 
-    const whiteKingInPlace =
-      this._board[Ox888.e1a]?.type === KING &&
-      this._board[Ox888.e1a]?.color === WHITE
-    const blackKingInPlace =
-      this._board[Ox888.e8h]?.type === KING &&
-      this._board[Ox888.e8h]?.color === BLACK
+    const whiteKingInPlace = this._kings.w !== EMPTY && this._kings.w === this._kingStart.w
+    const blackKingInPlace = this._kings.b !== EMPTY && this._kings.b === this._kingStart.b
 
-    if (
-      !whiteKingInPlace ||
-      this._board[Ox888.a1a]?.type !== ROOK ||
-      this._board[Ox888.a1a]?.color !== WHITE
-    ) {
-      this._castling.w &= ~BITS.QSIDE_CASTLE
+    // Validate rooks are still on their starting squares; otherwise clear rights
+    for (const entry of this._rookStart.w) {
+      if (!whiteKingInPlace || this._board[entry.square]?.type !== ROOK || this._board[entry.square]?.color !== WHITE) {
+        this._castling.w &= ~entry.flag
+      }
     }
-
-    if (
-      !whiteKingInPlace ||
-      this._board[Ox888.h1a]?.type !== ROOK ||
-      this._board[Ox888.h1a]?.color !== WHITE
-    ) {
-      this._castling.w &= ~BITS.KSIDE_CASTLE
-    }
-
-    if (
-      !blackKingInPlace ||
-      this._board[Ox888.a8h]?.type !== ROOK ||
-      this._board[Ox888.a8h]?.color !== BLACK
-    ) {
-      this._castling.b &= ~BITS.QSIDE_CASTLE
-    }
-
-    if (
-      !blackKingInPlace ||
-      this._board[Ox888.h8h]?.type !== ROOK ||
-      this._board[Ox888.h8h]?.color !== BLACK
-    ) {
-      this._castling.b &= ~BITS.KSIDE_CASTLE
+    for (const entry of this._rookStart.b) {
+      if (!blackKingInPlace || this._board[entry.square]?.type !== ROOK || this._board[entry.square]?.color !== BLACK) {
+        this._castling.b &= ~entry.flag
+      }
     }
 
     this._hash ^= this._castlingKey()
@@ -1340,72 +1415,81 @@ export class Chess {
   private _attacked(color: Color, square: number, verbose: true): Square[]
   private _attacked(color: Color, square: number, verbose?: boolean) {
     const attackers: Square[] = []
+
+    const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a8a && sq <= Ox888.h1h
+
+    const ROOK_DIRS = [-16, 1, 16, -1, 128, -128]
+    const BISHOP_DIRS = [-17, -15, 17, 15, 129, 127, -129, -127, 144, 112, -144, -112]
+    const QUEEN_DIRS = ROOK_DIRS.concat(BISHOP_DIRS)
+    const KING_DIRS = QUEEN_DIRS
+
     for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
-      // did we run off the end of the board
       if (i & 0x888) {
         i += 7
         continue
       }
+      const p = this._board[i]
+      if (!p || p.color !== color) continue
+      if (i === square) continue
 
-      // if empty square or wrong color
-      if (this._board[i] === undefined || this._board[i].color !== color) {
-        continue
+      const pushOrReturn = () => {
+        if (!verbose) return true
+        attackers.push(algebraic(i))
+        return undefined as unknown as boolean
       }
 
-      const piece = this._board[i]
-      const difference = i - square
-
-      // skip - to/from square are the same
-      if (difference === 0) {
-        continue
-      }
-
-      const index = difference + 119
-
-      if (ATTACKS[index] & PIECE_MASKS[piece.type]) {
-        if (piece.type === PAWN) {
-          if (
-            (difference > 0 && piece.color === WHITE) ||
-            (difference <= 0 && piece.color === BLACK)
-          ) {
-            if (!verbose) {
-              return true
-            } else {
-              attackers.push(algebraic(i))
+      switch (p.type) {
+        case PAWN: {
+          const offs = PAWN_OFFSETS[color]
+          const targets = [i + offs[2], i + offs[3], i + offs[5], i + offs[6]]
+          for (const t of targets) {
+            if (!inBounds(t)) continue
+            if (t === square) {
+              const res = pushOrReturn()
+              if (res === true) return true
             }
           }
-          continue
+          break
         }
-
-        // if the piece is a knight or a king
-        if (piece.type === 'n' || piece.type === 'k') {
-          if (!verbose) {
-            return true
-          } else {
-            attackers.push(algebraic(i))
-            continue
+        case KNIGHT: {
+          for (const o of PIECE_OFFSETS.n) {
+            const t = i + o
+            if (!inBounds(t)) continue
+            if (t === square) {
+              const res = pushOrReturn()
+              if (res === true) return true
+            }
           }
+          break
         }
-
-        const offset = RAYS[index]
-        let j = i + offset
-
-        let blocked = false
-        while (j !== square) {
-          if (this._board[j] != null) {
-            blocked = true
-            break
+        case KING: {
+          for (const d of KING_DIRS) {
+            const t = i + d
+            if (!inBounds(t)) continue
+            if (t === square) {
+              const res = pushOrReturn()
+              if (res === true) return true
+            }
           }
-          j += offset
+          break
         }
-
-        if (!blocked) {
-          if (!verbose) {
-            return true
-          } else {
-            attackers.push(algebraic(i))
-            continue
+        case BISHOP:
+        case ROOK:
+        case QUEEN: {
+          const dirs = p.type === BISHOP ? BISHOP_DIRS : p.type === ROOK ? ROOK_DIRS : QUEEN_DIRS
+          for (const d of dirs) {
+            let t = i + d
+            while (inBounds(t)) {
+              if (t === square) {
+                const res = pushOrReturn()
+                if (res === true) return true
+                break
+              }
+              if (this._board[t]) break
+              t += d
+            }
           }
+          break
         }
       }
     }
@@ -1671,19 +1755,28 @@ export class Chess {
       if (type === PAWN) {
         if (forPiece && forPiece !== type) continue
 
-        // single square, non-capturing
+        // single square forward, non-capturing (rank direction)
         to = from + PAWN_OFFSETS[us][0]
-        if (!this._board[to]) {
+        if (!(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
 
-          // double square
+          // double square forward (only from second rank on same layer)
           to = from + PAWN_OFFSETS[us][1]
-          if (SECOND_RANK[us] === rank(from) && !this._board[to]) {
+          if (
+            !(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h &&
+            SECOND_RANK[us] === rank(from) && !this._board[to]
+          ) {
             addMove(moves, us, from, to, PAWN, undefined, BITS.BIG_PAWN)
           }
         }
 
-        // pawn captures
+        // single square upward (layer direction), non-capturing
+        to = from + PAWN_OFFSETS[us][4]
+        if (to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
+          addMove(moves, us, from, to, PAWN)
+        }
+
+        // pawn captures forward-diagonals (on rank/file plane)
         for (let j = 2; j < 4; j++) {
           to = from + PAWN_OFFSETS[us][j]
           if (to & 0x888) continue
@@ -1702,6 +1795,24 @@ export class Chess {
             addMove(moves, us, from, to, PAWN, PAWN, BITS.EP_CAPTURE)
           }
         }
+
+        // pawn captures upward-diagonals (on file/layer plane)
+        for (let j = 5; j < 7; j++) {
+          to = from + PAWN_OFFSETS[us][j]
+          if (to < Ox888.a8a || to > Ox888.h1h) continue
+
+          if (this._board[to]?.color === them) {
+            addMove(
+              moves,
+              us,
+              from,
+              to,
+              PAWN,
+              this._board[to].type,
+              BITS.CAPTURE,
+            )
+          }
+        }
       } else {
         if (forPiece && forPiece !== type) continue
 
@@ -1711,7 +1822,8 @@ export class Chess {
 
           while (true) {
             to += offset
-            if (to & 0x888) break
+            // off the board in-layer or by leaving layer bounds
+            if ((to & 0x888) || to < Ox888.a8a || to > Ox888.h1h) break
 
             if (!this._board[to]) {
               addMove(moves, us, from, to, type)
@@ -1968,12 +2080,10 @@ export class Chess {
 
     // turn off castling if we move a rook
     if (this._castling[us]) {
-      for (let i = 0, len = ROOKS[us].length; i < len; i++) {
-        if (
-          move.from === ROOKS[us][i].square &&
-          this._castling[us] & ROOKS[us][i].flag
-        ) {
-          this._castling[us] ^= ROOKS[us][i].flag
+      const list = this._rookStart[us]
+      for (let i = 0, len = list.length; i < len; i++) {
+        if (move.from === list[i].square && (this._castling[us] & list[i].flag)) {
+          this._castling[us] ^= list[i].flag
           break
         }
       }
@@ -1981,12 +2091,10 @@ export class Chess {
 
     // turn off castling if we capture a rook
     if (this._castling[them]) {
-      for (let i = 0, len = ROOKS[them].length; i < len; i++) {
-        if (
-          move.to === ROOKS[them][i].square &&
-          this._castling[them] & ROOKS[them][i].flag
-        ) {
-          this._castling[them] ^= ROOKS[them][i].flag
+      const list = this._rookStart[them]
+      for (let i = 0, len = list.length; i < len; i++) {
+        if (move.to === list[i].square && (this._castling[them] & list[i].flag)) {
+          this._castling[them] ^= list[i].flag
           break
         }
       }

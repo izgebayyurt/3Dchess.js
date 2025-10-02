@@ -58,7 +58,7 @@ export function xoroshiro128(state: bigint) {
 const rand = xoroshiro128(0xa187eb39cdcaed8f31c4b365b102e01en)
 
 const PIECE_KEYS = Array.from({ length: 2 }, () =>
-  Array.from({ length: 6 }, () => Array.from({ length: 1024 }, () => rand())),
+  Array.from({ length: 6 }, () => Array.from({ length: 2048 }, () => rand())),
 )
 
 const EP_KEYS = Array.from({ length: 8 }, () => rand())
@@ -482,7 +482,7 @@ const Ox888: Record<Square, number> = (() => {
   for (let l = 0; l < 8; l++) {
     for (let r = 0; r < 8; r++) {
       for (let f = 0; f < 8; f++) {
-        const idx = f + r * 16 + l * 128
+        const idx = f + r * 16 + l * 256
         const key = `${files[f]}${ranks[r]}${layers[l]}` as Square
         map[key] = idx
       }
@@ -493,8 +493,8 @@ const Ox888: Record<Square, number> = (() => {
 
 const PAWN_OFFSETS = {
   // forward, double-forward, capture-right, capture-left, up, double-up, up-capture-right, up-capture-left
-  b: [16, 32, 17, 15, -128, -256, -127, -129],
-  w: [-16, -32, -17, -15, 128, 256, 129, 127],
+  b: [16, 32, 17, 15, -256, -512, -257, -255],
+  w: [-16, -32, -17, -15, 256, 512, 255, 257],
 }
 
 const PIECE_OFFSETS = {
@@ -502,19 +502,19 @@ const PIECE_OFFSETS = {
   n: [
     // file-rank plane (classic)
     -18, -33, -31, -14, 18, 33, 31, 14,
-    // file-layer plane
-    257, 255, 130, 126, -257, -255, -130, -126,
-    // rank-layer plane
-    272, 240, 160, 96, -272, -240, -160, -96,
+    // file-layer plane (stride 256)
+    258, 254, 513, 511, -258, -254, -513, -511,
+    // rank-layer plane (rank 16, layer 256)
+    288, 224, 528, 496, -288, -224, -528, -496,
   ],
   // Bishops move diagonally on any of the 3 planes
-  b: [-17, -15, 17, 15, 129, 127, -129, -127, 144, 112, -144, -112],
+  b: [-17, -15, 17, 15, 257, 255, -257, -255, 272, 240, -272, -240],
   // Rooks move orthogonally along files, ranks, or layers
-  r: [-16, 1, 16, -1, 128, -128],
+  r: [-16, 1, 16, -1, 256, -256],
   // Queens combine rook and bishop directions
-  q: [-17, -16, -15, 1, 17, 16, 15, -1, 128, -128, 129, 127, -129, -127, 144, 112, -144, -112],
+  q: [-17, -16, -15, 1, 17, 16, 15, -1, 256, -256, 257, 255, -257, -255, 272, 240, -272, -240],
   // Kings move one step in any queen direction (loop will break after one step)
-  k: [-17, -16, -15, 1, 17, 16, 15, -1, 128, -128, 129, 127, -129, -127, 144, 112, -144, -112],
+  k: [-17, -16, -15, 1, 17, 16, 15, -1, 256, -256, 257, 255, -257, -255, 272, 240, -272, -240],
 }
 
 // prettier-ignore
@@ -610,11 +610,11 @@ function isDigit(c: string): boolean {
   return '0123456789'.indexOf(c) !== -1
 }
 
-// Converts a 0x888 square (with 3D layer stride 128) to algebraic notation.
+// Converts a 0x888 square (with 3D layer stride 256) to algebraic notation.
 function algebraic(square: number): Square {
   const f = file(square)
   const r = rank(square)
-  const l = Math.floor(square / 128)
+  const l = Math.floor(square / 256)
   return (
     'abcdefgh'.substring(f, f + 1) +
     '87654321'.substring(r, r + 1) +
@@ -824,7 +824,7 @@ function addMove(
   flags: number = BITS.NORMAL,
 ) {
   const r = rank(to)
-  const l = Math.floor(to / 128)
+  const l = Math.floor(to / 256)
 
   // promotion if reaching last rank OR last layer (white: rank 8 or layer h; black: rank 1 or layer a)
   const promote =
@@ -993,7 +993,7 @@ export class Chess {
             } else {
               const color = ch < 'a' ? WHITE : BLACK
               const rIndex = 7 - rankFromBottom // convert bottom-up to 0x88 rank index
-              const sq = ((rIndex << 4) | fileIdx) + l * 128
+              const sq = ((rIndex << 4) | fileIdx) + l * 256
               this._set(sq, { type: ch.toLowerCase() as PieceSymbol, color })
               if (ch.toLowerCase() === KING) {
                 this._kings[color] = sq
@@ -1046,7 +1046,7 @@ export class Chess {
         let empty = 0
         const rIndex = 7 - rankFromBottom
         for (let f = 0; f < 8; f++) {
-          const i = ((rIndex << 4) | f) + l * 128
+          const i = ((rIndex << 4) | f) + l * 256
           const piece = this._board[i]
           if (piece) {
             if (empty > 0) {
@@ -1340,7 +1340,7 @@ export class Chess {
       this._kingStart[color] = ks
       const list: { square: number; flag: number }[] = []
       if (ks !== EMPTY) {
-        const layerBase = Math.floor(ks / 128) * 128
+        const layerBase = Math.floor(ks / 256) * 256
         const rIdx = rank(ks)
         const left = (rIdx << 4) + 0 + layerBase
         const right = (rIdx << 4) + 7 + layerBase
@@ -1417,21 +1417,22 @@ export class Chess {
 
     const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a1a && sq <= Ox888.h8h
 
-    const ROOK_DIRS = [-16, 1, 16, -1, 128, -128]
-    const BISHOP_DIRS = [-17, -15, 17, 15, 129, 127, -129, -127, 144, 112, -144, -112]
+    const ROOK_DIRS = [-16, 1, 16, -1, 256, -256]
+    const BISHOP_DIRS = [-17, -15, 17, 15, 257, 255, -257, -255, 272, 240, -272, -240]
     const QUEEN_DIRS = ROOK_DIRS.concat(BISHOP_DIRS)
     const KING_DIRS = QUEEN_DIRS
 
     for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
+
       if (i & 0x080) {
-        i += 63
+        i += 127
         continue
       }
       else if (i & 0x008) {
         i += 7
         continue
       }
-      console.log(i)
+
       const p = this._board[i]
       if (!p || p.color !== color) continue
       if (i === square) continue

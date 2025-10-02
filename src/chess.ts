@@ -617,7 +617,7 @@ function algebraic(square: number): Square {
   const l = Math.floor(square / 256)
   return (
     'abcdefgh'.substring(f, f + 1) +
-    '87654321'.substring(r, r + 1) +
+    '12345678'.substring(r, r + 1) +
     'abcdefgh'.substring(l, l + 1)
   ) as Square
 }
@@ -1433,8 +1433,11 @@ export class Chess {
         continue
       }
 
+      // check the square
       const p = this._board[i]
+      // if the square is empty or the piece is not the right color, skip
       if (!p || p.color !== color) continue
+      // if the square is the same square as the attacked square, skip
       if (i === square) continue
 
       const pushOrReturn = () => {
@@ -1481,6 +1484,7 @@ export class Chess {
         case BISHOP:
         case ROOK:
         case QUEEN: {
+          console.log("log", "idx of attacker:", i, "attacked square: ", square, p.type);
           const dirs = p.type === BISHOP ? BISHOP_DIRS : p.type === ROOK ? ROOK_DIRS : QUEEN_DIRS
           for (const d of dirs) {
             let t = i + d

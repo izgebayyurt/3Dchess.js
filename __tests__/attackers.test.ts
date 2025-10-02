@@ -12,12 +12,12 @@ import { expect, test } from 'vitest'
 test('attackers - rook attacks along file, rank, and layer planes', () => {
   const chess = new Chess()
   chess.clear()
-  chess.put({ type: 'r', color: WHITE }, 'c1b')
+  chess.put({ type: 'r', color: WHITE }, 'e5b')
   chess.put({ type: 'k', color: WHITE }, 'a1a')
   chess.put({ type: 'k', color: BLACK }, 'h1a')
 
   // Same layer (rank and file)
-  expect(chess.attackers('a1b', WHITE)).to.have.members(['c1b'])
+  expect(chess.attackers('b5b', WHITE)).to.have.members(['e5b'])
 /*  expect(chess.attackers('c8d', WHITE)).to.have.members(['c5d'])
   expect(chess.attackers('a5d', WHITE)).to.have.members(['c5d'])
   expect(chess.attackers('h5d', WHITE)).to.have.members(['c5d'])

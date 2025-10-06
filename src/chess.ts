@@ -161,7 +161,7 @@ export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
 export type Suffix = (typeof SUFFIX_LIST)[number]
 
 export const DEFAULT_POSITION =
-  'RNBQKBNR/PPPPPPPP/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/pppppppp/rnbqkbnr w KQkq - 0 1'
+  '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/pppppppp/rnbqkbnr/8/8/8/8/8/8 w KQkq - 0 1'
 
 export type Piece = {
   color: Color

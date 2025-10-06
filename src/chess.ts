@@ -477,7 +477,7 @@ const HEADER_TEMPLATE = {
 const Ox888: Record<Square, number> = (() => {
   const map = {} as Record<Square, number>
   const files = 'abcdefgh'
-  const ranks = '12345678'
+  const ranks = '87654321'
   const layers = 'abcdefgh'
   for (let l = 0; l < 8; l++) {
     for (let r = 0; r < 8; r++) {
@@ -1047,7 +1047,9 @@ export class Chess {
         const rIndex = 7 - rankFromBottom
         for (let f = 0; f < 8; f++) {
           const i = ((rIndex << 4) | f) + l * 256
+
           const piece = this._board[i]
+          console.log("fen", i, piece)
           if (piece) {
             if (empty > 0) {
               fen += empty
@@ -1486,6 +1488,7 @@ export class Chess {
             let t = i + d
             while (inBounds(t)) {
               if (t === square) {
+                //console.log(algebraic(i), algebraic(t))
                 const res = pushOrReturn()
                 if (res === true) return true
                 break

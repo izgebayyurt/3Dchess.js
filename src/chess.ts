@@ -161,7 +161,7 @@ export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
 export type Suffix = (typeof SUFFIX_LIST)[number]
 
 export const DEFAULT_POSITION =
-  '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/pppppppp/rnbqkbnr/8/8/8/8/8/8 w KQkq - 0 1'
+  '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/rnbqkbnr/pppppppp/8/8/8/8/8/8 w KQkq - 0 1'
 
 export type Piece = {
   color: Color
@@ -982,26 +982,27 @@ export class Chess {
       // 64 rows: for each layer a..h, rows from a1x..h1x up to a8x..h8x
       // Iterate layers l = 0..7 (a..h)
       let rowIndex = 0
+      let square = 0
       for (let l = 0; l < 8; l++) {
-        for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
+        for (let r = 0; r < 8; r++) {
           const row = rows[rowIndex++]
-          let fileIdx = 0
           for (let k = 0; k < row.length; k++) {
             const ch = row[k]
+            console.log(ch, square)
             if (isDigit(ch)) {
-              fileIdx += parseInt(ch, 10)
+              square += parseInt(ch, 10)
             } else {
               const color = ch < 'a' ? WHITE : BLACK
-              const rIndex = 7 - rankFromBottom // convert bottom-up to 0x88 rank index
-              const sq = ((rIndex << 4) | fileIdx) + l * 256
-              this._set(sq, { type: ch.toLowerCase() as PieceSymbol, color })
+              this._set(square, { type: ch.toLowerCase() as PieceSymbol, color })
               if (ch.toLowerCase() === KING) {
-                this._kings[color] = sq
+                this._kings[color] = square
               }
-              fileIdx += 1
+              square += 1
             }
           }
+          square += 8
         }
+        square += 128
       }
     }
 

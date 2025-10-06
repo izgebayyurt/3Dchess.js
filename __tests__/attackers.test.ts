@@ -18,19 +18,20 @@ test('attackers - rook attacks along file, rank, and layer planes', () => {
 
   // Same layer (rank and file)
   expect(chess.attackers('b5b', WHITE)).to.have.members(['e5b'])
-/*  expect(chess.attackers('c8d', WHITE)).to.have.members(['c5d'])
-  expect(chess.attackers('a5d', WHITE)).to.have.members(['c5d'])
-  expect(chess.attackers('h5d', WHITE)).to.have.members(['c5d'])
+  expect(chess.attackers('h5b', WHITE)).to.have.members(['e5b'])
+  expect(chess.attackers('e1b', WHITE)).to.have.members(['e5b'])
+  expect(chess.attackers('e7b', WHITE)).to.have.members(['e5b'])
 
   // Across layers along the same file/rank coordinates
-  expect(chess.attackers('c5a', WHITE)).to.have.members(['c5d'])
-  expect(chess.attackers('c5h', WHITE)).to.have.members(['c5d'])*/
+  expect(chess.attackers('e5a', WHITE)).to.have.members(['e5b'])
+  expect(chess.attackers('e5f', WHITE)).to.have.members(['e5b'])
 })
-/*
 
 test('attackers - bishop attacks diagonals in all three orthogonal planes', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'b', color: WHITE }, 'c5d')
 
   // File-rank plane diagonals
@@ -47,8 +48,10 @@ test('attackers - bishop attacks diagonals in all three orthogonal planes', () =
 })
 
 test('attackers - knights attack with L-shapes on any plane', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'n', color: WHITE }, 'd4d')
 
   // File-rank plane
@@ -60,10 +63,12 @@ test('attackers - knights attack with L-shapes on any plane', () => {
 })
 
 test('attackers - pawns attack forward- and upward-diagonals', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'p', color: WHITE }, 'e2a')
-  chess.put({ type: 'p', color: BLACK }, 'e7a')
+  chess.put({ type: 'p', color: BLACK }, 'e7b')
 
   // White forward-diagonal attacks on same layer
   expect(chess.attackers('d3a', WHITE)).to.have.members(['e2a'])
@@ -74,29 +79,32 @@ test('attackers - pawns attack forward- and upward-diagonals', () => {
   expect(chess.attackers('f2b', WHITE)).to.have.members(['e2a'])
 
   // Black pawn mirrored (from e7a)
-  expect(chess.attackers('d6a', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('f6a', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('d7b', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('f7b', BLACK)).to.have.members(['e7a'])
+  expect(chess.attackers('d6b', BLACK)).to.have.members(['e7b'])
+  expect(chess.attackers('f6b', BLACK)).to.have.members(['e7b'])
+  expect(chess.attackers('d7a', BLACK)).to.have.members(['e7b'])
+  expect(chess.attackers('f7a', BLACK)).to.have.members(['e7b'])
 })
-
 
 test('attackers - return value depends on side to move', () => {
   const chess = new Chess()
+
+  // white plays first, attackers are written here
   expect(chess.attackers('c3a')).to.have.members(['b1a', 'b2a', 'd2a'])
   expect(chess.attackers('c6a')).toEqual([])
 
-  chess.move('e4')
+  // make a pawn move
+  chess.move({from: "e2a", to: "e4a"})
+
+  // now it's black's turn, so the same squares are unattacked
   expect(chess.attackers('c3a')).toEqual([])
-  expect(chess.attackers('c6a')).to.have.members(['b7a', 'b8a', 'd7a'])
-
-  chess.move('e5')
-  expect(chess.attackers('c3a')).to.have.members(['b1a', 'b2a', 'd2a'])
   expect(chess.attackers('c6a')).toEqual([])
+
+  // but the black counterparts should be attacked
+  expect(chess.attackers('c6h')).to.have.members(['b8h', 'b7h', 'd7h'])
 })
 
  test('attackers - every piece attacking empty square', () => {
-  const chess = new Chess('2b5/4kp2/2r5/3q2n1/8/8/4P3/4K3 w - - 0 1')
+  const chess = new Chess('2b5/4kp2/2r5/3q2n1/8/8/4P3/4K3/64/64/64/64/64/64/64 w - - 0 1')
   expect(chess.attackers('e6a', BLACK)).to.have.members([
     'c6a',
     'c8a',
@@ -106,6 +114,7 @@ test('attackers - return value depends on side to move', () => {
     'g5a',
   ])
 })
+/*
 
  test('attackers - every piece attacking another piece', () => {
   const chess = new Chess('4k3/8/8/8/5Q2/5p1R/4PK2/4N2B w - - 0 1')

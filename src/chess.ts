@@ -493,8 +493,8 @@ const Ox888: Record<Square, number> = (() => {
 
 const PAWN_OFFSETS = {
   // forward, double-forward, capture-right, capture-left, up, double-up, up-capture-right, up-capture-left
-  b: [16, 32, 17, 15, -256, -512, -257, -255],
-  w: [-16, -32, -17, -15, 256, 512, 255, 257],
+  b: [-16, -32, -17, -15, -256, -512, -257, -255],
+  w: [16, 32, 17, 15, 256, 512, 255, 257],
 }
 
 const PIECE_OFFSETS = {
@@ -561,16 +561,16 @@ const SYMBOLS = 'pnbrqkPNBRQK'
 
 const PROMOTIONS: PieceSymbol[] = [KNIGHT, BISHOP, ROOK, QUEEN]
 
-const RANK_1 = 7
-const RANK_2 = 6
+const RANK_1 = 0
+const RANK_2 = 1
 /*
  * const RANK_3 = 5
  * const RANK_4 = 4
  * const RANK_5 = 3
  * const RANK_6 = 2
  */
-const RANK_7 = 1
-const RANK_8 = 0
+const RANK_7 = 6
+const RANK_8 = 7
 
 const SIDES = {
   [KING]: BITS.KSIDE_CASTLE,
@@ -671,7 +671,9 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
   }
 
   // 7th criterion: 1st field contains either 8 (legacy) or 64 (3D) rows
-  const rows = tokens[0].split('/')
+  let rows = tokens[0].split('/')
+  // useful hack to skip an entire layer
+  rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
   if (rows.length !== 8 && rows.length !== 64) {
     return {
       ok: false,
@@ -825,7 +827,6 @@ function addMove(
 ) {
   const r = rank(to)
   const l = Math.floor(to / 256)
-
   // promotion if reaching last rank OR last layer (white: rank 8 or layer h; black: rank 1 or layer a)
   const promote =
     piece === PAWN && (
@@ -958,7 +959,9 @@ export class Chess {
 
     this.clear({ preserveHeaders })
 
-    const rows = position.split('/')
+    let rows = position.split('/')
+    // useful hack to skip an entire layer
+    rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
 
     if (rows.length === 8) {
       // Legacy 2D-style rows (assumed to describe layer 'a', from a1a..h8a)
@@ -985,20 +988,17 @@ export class Chess {
       for (let l = 0; l < 8; l++) {
         for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
           const row = rows[rowIndex++]
-          let fileIdx = 0
           for (let k = 0; k < row.length; k++) {
             const ch = row[k]
             if (isDigit(ch)) {
-              fileIdx += parseInt(ch, 10)
+              continue
             } else {
               const color = ch < 'a' ? WHITE : BLACK
-              const rIndex = 7 - rankFromBottom // convert bottom-up to 0x88 rank index
-              const sq = ((rIndex << 4) | fileIdx) + l * 256
+              const sq = k + rankFromBottom * 16 + l * 256
               this._set(sq, { type: ch.toLowerCase() as PieceSymbol, color })
               if (ch.toLowerCase() === KING) {
                 this._kings[color] = sq
               }
-              fileIdx += 1
             }
           }
         }
@@ -1177,7 +1177,11 @@ export class Chess {
 
     for (let i = Ox888.a1a; i <= Ox888.h8h; i++) {
       // did we run off the end of the board
-      if (i & 0x888) {
+      if (i & 0x080) {
+        i += 63
+        continue
+      }
+      else if (i & 0x008) {
         i += 7
         continue
       }
@@ -1449,7 +1453,7 @@ export class Chess {
       switch (p.type) {
         case PAWN: {
           const offs = PAWN_OFFSETS[color]
-          const targets = [i + offs[2], i + offs[3], i + offs[5], i + offs[6]]
+          const targets = [i + offs[2], i + offs[3], i + offs[6], i + offs[7]]
           for (const t of targets) {
             if (!inBounds(t)) continue
             if (t === square) {
@@ -1484,7 +1488,6 @@ export class Chess {
         case BISHOP:
         case ROOK:
         case QUEEN: {
-          console.log("log", "idx of attacker:", i, "attacked square: ", square, p.type);
           const dirs = p.type === BISHOP ? BISHOP_DIRS : p.type === ROOK ? ROOK_DIRS : QUEEN_DIRS
           for (const d of dirs) {
             let t = i + d
@@ -1752,8 +1755,12 @@ export class Chess {
     }
 
     for (let from = firstSquare; from <= lastSquare; from++) {
-      // did we run off the end of the board
-      if (from & 0x888) {
+      // did we run off the end of the board?
+      if (from & 0x080) {
+        from += 63
+        continue
+      }
+      else if (from & 0x008) {
         from += 7
         continue
       }
@@ -1770,6 +1777,7 @@ export class Chess {
 
         // single square forward, non-capturing (rank direction)
         to = from + PAWN_OFFSETS[us][0]
+
         if (!(to & 0x888) && to >= Ox888.a1a && to <= Ox888.h8h && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
 
@@ -1969,8 +1977,10 @@ export class Chess {
     } else if (move === null) {
       moveObj = this._moveFromSan(SAN_NULLMOVE, strict)
     } else if (typeof move === 'object') {
+
       const moves = this._moves()
 
+      //console.log(moves.map(m => this._moveToSan(m, moves)))
       // convert the pretty move object to an ugly move object
       for (let i = 0, len = moves.length; i < len; i++) {
         if (

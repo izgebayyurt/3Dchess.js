@@ -1049,7 +1049,7 @@ export class Chess {
           const i = ((rIndex << 4) | f) + l * 256
 
           const piece = this._board[i]
-          console.log("fen", i, piece)
+          if (piece !== undefined) console.log(piece, i)
           if (piece) {
             if (empty > 0) {
               fen += empty

@@ -104,7 +104,8 @@ test('attackers - return value depends on side to move', () => {
 })
 
  test('attackers - every piece attacking empty square', () => {
-  const chess = new Chess('2b5/4kp2/2r5/3q2n1/8/8/4P3/4K3/64/64/64/64/64/64/64 w - - 0 1')
+  const chess = new Chess('4K3/4P3/8/8/3q2n1/2r5/4kp2/2b5/64/64/64/64/64/64/64 w - - 0 1')
+   console.log(chess.fen())
   expect(chess.attackers('e6a', BLACK)).to.have.members([
     'c6a',
     'c8a',

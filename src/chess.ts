@@ -1042,11 +1042,10 @@ export class Chess {
 
     // 3D FEN output: layers a..h, each with rows a1x..h1x up to a8x..h8x
     for (let l = 0; l < 8; l++) {
-      for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
+      for (let r = 0; r < 8; r++) {
         let empty = 0
-        const rIndex = 7 - rankFromBottom
         for (let f = 0; f < 8; f++) {
-          const i = ((rIndex << 4) | f) + l * 256
+          const i = f + r * 16 + l * 256
           const piece = this._board[i]
           if (piece) {
             if (empty > 0) {
@@ -1061,7 +1060,7 @@ export class Chess {
         }
         if (empty > 0) fen += empty
         // add row separator except after the last row of the last layer
-        if (!(l === 7 && rankFromBottom === 7)) fen += '/'
+        if (!(l === 7 && r === 7)) fen += '/'
       }
     }
 

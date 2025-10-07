@@ -26,11 +26,10 @@ test('attackers - rook attacks along file, rank, and layer planes', () => {
   expect(chess.attackers('h5b', WHITE)).to.have.members(['c5b'])
 
   // Across layers along the same file/rank coordinates
+  expect(chess.attackers('c5h', WHITE)).to.have.members(['c5b'])
   expect(chess.attackers('c5a', WHITE)).to.have.members(['c5b'])
-  expect(chess.attackers('c5c', WHITE)).to.have.members(['c5b'])
 })
 /*
-
 test('attackers - bishop attacks diagonals in all three orthogonal planes', () => {
   const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
   chess.clear()

@@ -29,10 +29,11 @@ test('attackers - rook attacks along file, rank, and layer planes', () => {
   expect(chess.attackers('c5h', WHITE)).to.have.members(['c5b'])
   expect(chess.attackers('c5a', WHITE)).to.have.members(['c5b'])
 })
-/*
 test('attackers - bishop attacks diagonals in all three orthogonal planes', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'b', color: WHITE }, 'c5d')
 
   // File-rank plane diagonals
@@ -49,8 +50,10 @@ test('attackers - bishop attacks diagonals in all three orthogonal planes', () =
 })
 
 test('attackers - knights attack with L-shapes on any plane', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'n', color: WHITE }, 'd4d')
 
   // File-rank plane
@@ -62,10 +65,12 @@ test('attackers - knights attack with L-shapes on any plane', () => {
 })
 
 test('attackers - pawns attack forward- and upward-diagonals', () => {
-  const chess = new Chess('8/8/8/8/8/8/8/8 w - - 0 1')
+  const chess = new Chess()
   chess.clear()
+  chess.put({ type: 'k', color: WHITE }, 'a1a')
+  chess.put({ type: 'k', color: BLACK }, 'h1a')
   chess.put({ type: 'p', color: WHITE }, 'e2a')
-  chess.put({ type: 'p', color: BLACK }, 'e7a')
+  chess.put({ type: 'p', color: BLACK }, 'e7h')
 
   // White forward-diagonal attacks on same layer
   expect(chess.attackers('d3a', WHITE)).to.have.members(['e2a'])
@@ -76,10 +81,10 @@ test('attackers - pawns attack forward- and upward-diagonals', () => {
   expect(chess.attackers('f2b', WHITE)).to.have.members(['e2a'])
 
   // Black pawn mirrored (from e7a)
-  expect(chess.attackers('d6a', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('f6a', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('d7b', BLACK)).to.have.members(['e7a'])
-  expect(chess.attackers('f7b', BLACK)).to.have.members(['e7a'])
+  expect(chess.attackers('d6h', BLACK)).to.have.members(['e7h'])
+  expect(chess.attackers('f6h', BLACK)).to.have.members(['e7h'])
+  expect(chess.attackers('d7g', BLACK)).to.have.members(['e7h'])
+  expect(chess.attackers('f7g', BLACK)).to.have.members(['e7h'])
 })
 
 
@@ -88,13 +93,13 @@ test('attackers - return value depends on side to move', () => {
   expect(chess.attackers('c3a')).to.have.members(['b1a', 'b2a', 'd2a'])
   expect(chess.attackers('c6a')).toEqual([])
 
-  chess.move('e4')
+  chess.move({from: "e2a", to: "e4a"})
   expect(chess.attackers('c3a')).toEqual([])
-  expect(chess.attackers('c6a')).to.have.members(['b7a', 'b8a', 'd7a'])
+  expect(chess.attackers('c6h')).to.have.members(['b7h', 'b8h', 'd7h'])
 
-  chess.move('e5')
+  chess.move({from: "e7h", to: "e5h"})
   expect(chess.attackers('c3a')).to.have.members(['b1a', 'b2a', 'd2a'])
-  expect(chess.attackers('c6a')).toEqual([])
+  expect(chess.attackers('c6h')).toEqual([])
 })
 
  test('attackers - every piece attacking empty square', () => {
@@ -193,10 +198,9 @@ test('attackers - return value depends on side to move', () => {
   expect(chess.attackers('f3a')).to.have.members(['e2a', 'g2a', 'g1a'])
   expect(chess.attackers('e2a')).to.have.members(['d1a', 'e1a', 'f1a', 'g1a'])
   expect(chess.attackers('f6a')).to.have.members([])
-  chess.move('e4')
-  expect(chess.attackers('f6a')).to.have.members(['g8a', 'e7a', 'g7a'])
+   chess.move({from: "e2a", to: "e4a"})
+  expect(chess.attackers('f6h')).to.have.members(['g8h', 'e7h', 'g7h'])
   expect(chess.attackers('f3a', WHITE)).to.have.members(['g2a', 'd1a', 'g1a'])
-  chess.load('4k3/4n3/8/8/8/8/4R3/4K3 w - - 0 1')
+  chess.load('4k3/4n3/8/8/8/8/4R3/4K3/64/64/64/64/64/64 w - - 0 1')
   expect(chess.attackers('c6a', BLACK)).to.have.members(['e7a'])
 })
-*/

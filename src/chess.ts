@@ -672,6 +672,7 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
 
   // 7th criterion: 1st field contains either 8 (legacy) or 64 (3D) rows
   const rows = tokens[0].split('/')
+  
   if (rows.length !== 8 && rows.length !== 64) {
     return {
       ok: false,
@@ -988,7 +989,6 @@ export class Chess {
           const row = rows[rowIndex++]
           for (let k = 0; k < row.length; k++) {
             const ch = row[k]
-            // console.log(ch, square)
             if (isDigit(ch)) {
               square += parseInt(ch, 10)
             } else {
@@ -1050,7 +1050,6 @@ export class Chess {
           const i = ((rIndex << 4) | f) + l * 256
 
           const piece = this._board[i]
-          // if (piece !== undefined) console.log(piece, i)
           if (piece) {
             if (empty > 0) {
               fen += empty
@@ -1449,7 +1448,7 @@ export class Chess {
       switch (p.type) {
         case PAWN: {
           const offs = PAWN_OFFSETS[color]
-          const targets = [i + offs[2], i + offs[3], i + offs[5], i + offs[6]]
+          const targets = [i + offs[2], i + offs[3], i + offs[6], i + offs[7]]
           for (const t of targets) {
             if (!inBounds(t)) continue
             if (t === square) {
@@ -1489,7 +1488,6 @@ export class Chess {
             let t = i + d
             while (inBounds(t)) {
               if (t === square) {
-                //console.log(algebraic(i), algebraic(t))
                 const res = pushOrReturn()
                 if (res === true) return true
                 break
@@ -1511,7 +1509,6 @@ export class Chess {
   }
 
   attackers(square: Square, attackedBy?: Color): Square[] {
-    console.log(Ox888[square])
     if (!attackedBy) {
       return this._attacked(this._turn, Ox888[square], true)
     } else {

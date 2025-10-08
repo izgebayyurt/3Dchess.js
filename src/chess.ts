@@ -161,6 +161,9 @@ export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
 export type Suffix = (typeof SUFFIX_LIST)[number]
 
 export const DEFAULT_POSITION =
+  'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+export const DEFAULT_POSITION_3D =
   '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/rnbqkbnr/pppppppp/8/8/8/8/8/8 w KQkq - 0 1'
 
 export type Piece = {
@@ -671,8 +674,8 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
   }
 
   // 7th criterion: 1st field contains either 8 (legacy) or 64 (3D) rows
-  const rows = tokens[0].split('/')
-  
+  let rows = tokens[0].split('/')
+  rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
   if (rows.length !== 8 && rows.length !== 64) {
     return {
       ok: false,
@@ -959,7 +962,8 @@ export class Chess {
 
     this.clear({ preserveHeaders })
 
-    const rows = position.split('/')
+    let rows = position.split('/')
+    rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
 
     if (rows.length === 8) {
       // Legacy 2D-style rows (assumed to describe layer 'a', from a1a..h8a)
@@ -3055,5 +3059,11 @@ export class Chess {
 
   moveNumber(): number {
     return this._moveNumber
+  }
+}
+
+export class Chess3D extends Chess {
+  constructor(fen = DEFAULT_POSITION_3D, { skipValidation = false } = {}) {
+    super(fen, { skipValidation })
   }
 }

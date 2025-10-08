@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 describe('Board Tests', () => {
   const tests = [
     {
-      fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      fen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR/64/64/64/64/64/64/64 w KQkq - 0 1',
       board: [
         [
           { square: 'a8', type: 'r', color: 'b' },

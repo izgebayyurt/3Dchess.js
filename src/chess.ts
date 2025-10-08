@@ -658,6 +658,10 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
     }
   }
 
+  if (tokens[3].length == 2){
+    tokens[3] = tokens[3] + 'a'
+  }
+
   // 4th criterion: 4th field is a valid e.p.-string? (3D: file + rank (3|6) + layer)
   if (!/^(-|[abcdefgh][36][a-h])$/.test(tokens[3])) {
     return { ok: false, error: 'Invalid FEN: en-passant square is invalid' }
@@ -830,11 +834,12 @@ function addMove(
   const r = rank(to)
   const l = Math.floor(to / 256)
 
-  // promotion if reaching last rank OR last layer (white: rank 8 or layer h; black: rank 1 or layer a)
+  // promotion if reaching last rank OR last layer (white: rank 1 or layer h; black: rank 8 or layer a)
+  // rank 1 is 8th row on the board, rank 8 is the 1st row
   const promote =
     piece === PAWN && (
-      (color === WHITE && (r === RANK_8 || l === 7)) ||
-      (color === BLACK && (r === RANK_1 || l === 0))
+      (color === WHITE && (r === RANK_1 || l === 7)) ||
+      (color === BLACK && (r === RANK_8 || l === 0))
     )
 
   if (promote) {
@@ -884,29 +889,29 @@ function strippedSan(move: string): string {
 }
 
 export class Chess {
-  private _board = new Array<Piece>(1024)
-  private _turn: Color = WHITE
-  private _header: Record<string, string | null> = {}
-  private _kings: Record<Color, number> = { w: EMPTY, b: EMPTY }
-  private _epSquare = -1
-  private _fenEpSquare = -1
-  private _halfMoves = 0
-  private _moveNumber = 0
-  private _history: History[] = []
-  private _comments: Record<string, string> = {}
-  private _suffixes: Record<string, Suffix> = {}
-  private _castling: Record<Color, number> = { w: 0, b: 0 }
+  protected _board = new Array<Piece>(1024)
+  protected _turn: Color = WHITE
+  protected _header: Record<string, string | null> = {}
+  protected _kings: Record<Color, number> = { w: EMPTY, b: EMPTY }
+  protected _epSquare = -1
+  protected _fenEpSquare = -1
+  protected _halfMoves = 0
+  protected _moveNumber = 0
+  protected _history: History[] = []
+  protected _comments: Record<string, string> = {}
+  protected _suffixes: Record<string, Suffix> = {}
+  protected _castling: Record<Color, number> = { w: 0, b: 0 }
   // dynamic castling home squares detected from the loaded position
-  private _kingStart: Record<Color, number> = { w: EMPTY, b: EMPTY }
-  private _rookStart: Record<Color, { square: number; flag: number }[]> = {
+  protected _kingStart: Record<Color, number> = { w: EMPTY, b: EMPTY }
+  protected _rookStart: Record<Color, { square: number; flag: number }[]> = {
     w: [],
     b: [],
   }
 
-  private _hash = 0n
+  protected _hash = 0n
 
   // tracks number of times a position has been seen for repetition checking
-  private _positionCount = new Map<bigint, number>()
+  protected _positionCount = new Map<bigint, number>()
 
   constructor(fen = DEFAULT_POSITION, { skipValidation = false } = {}) {
     this._comments = {}
@@ -966,7 +971,7 @@ export class Chess {
     rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
 
     if (rows.length === 8) {
-      // Legacy 2D-style rows (assumed to describe layer 'a', from a1a..h8a)
+      // Legacy 2D-style rows (assumed to describe layer 'a', from a1..h8)
       let square = 0
       for (let i = 0; i < position.length; i++) {
         const ch = position.charAt(i)
@@ -989,10 +994,11 @@ export class Chess {
       let rowIndex = 0
       let square = 0
       for (let l = 0; l < 8; l++) {
-        for (let r = 0; r < 8; r++) {
+        for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
           const row = rows[rowIndex++]
           for (let k = 0; k < row.length; k++) {
             const ch = row[k]
+
             if (isDigit(ch)) {
               square += parseInt(ch, 10)
             } else {
@@ -1049,9 +1055,8 @@ export class Chess {
     for (let l = 0; l < 8; l++) {
       for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
         let empty = 0
-        const rIndex = 7 - rankFromBottom
         for (let f = 0; f < 8; f++) {
-          const i = ((rIndex << 4) | f) + l * 256
+          const i = ((rankFromBottom << 4) | f) + l * 256
 
           const piece = this._board[i]
           if (piece) {
@@ -1145,7 +1150,7 @@ export class Chess {
     ].join(' ')
   }
 
-  private _pieceKey(i: number) {
+  protected _pieceKey(i: number) {
     if (!this._board[i]) {
       return 0n
     }
@@ -1169,16 +1174,16 @@ export class Chess {
     return PIECE_KEYS[colorIndex][typeIndex][i]
   }
 
-  private _epKey() {
+  protected _epKey() {
     return this._epSquare === EMPTY ? 0n : EP_KEYS[this._epSquare & 7]
   }
 
-  private _castlingKey() {
+  protected _castlingKey() {
     const index = (this._castling.w >> 5) | (this._castling.b >> 3)
     return CASTLING_KEYS[index]
   }
 
-  private _computeHash() {
+  protected _computeHash() {
     let hash = 0n
 
     for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
@@ -1209,7 +1214,7 @@ export class Chess {
    * is equal to the default position, the SetUp and FEN are deleted the setup
    * is only updated if history.length is zero, ie moves haven't been made.
    */
-  private _updateSetup(fen: string) {
+  protected _updateSetup(fen: string) {
     if (this._history.length > 0) return
 
     if (fen !== DEFAULT_POSITION) {
@@ -1274,13 +1279,13 @@ export class Chess {
     return false
   }
 
-  private _set(sq: number, piece: Piece) {
+  protected _set(sq: number, piece: Piece) {
     this._hash ^= this._pieceKey(sq)
     this._board[sq] = piece
     this._hash ^= this._pieceKey(sq)
   }
 
-  private _put(
+  protected _put(
     { type, color }: { type: PieceSymbol; color: Color },
     square: Square,
   ): boolean {
@@ -1320,7 +1325,7 @@ export class Chess {
     return true
   }
 
-  private _clear(sq: number) {
+  protected _clear(sq: number) {
     this._hash ^= this._pieceKey(sq)
     delete this._board[sq]
   }
@@ -1339,7 +1344,7 @@ export class Chess {
     return piece
   }
 
-  private _initCastlingStart() {
+  protected _initCastlingStart() {
     // Determine starting king squares and corner rook squares on that row/layer
     const compute = (color: Color) => {
       const ks = this._kings[color]
@@ -1363,7 +1368,7 @@ export class Chess {
     compute(BLACK)
   }
 
-  private _updateCastlingRights() {
+  protected _updateCastlingRights() {
     this._hash ^= this._castlingKey()
 
     const whiteKingInPlace = this._kings.w !== EMPTY && this._kings.w === this._kingStart.w
@@ -1384,7 +1389,7 @@ export class Chess {
     this._hash ^= this._castlingKey()
   }
 
-  private _updateEnPassantSquare() {
+  protected _updateEnPassantSquare() {
     if (this._epSquare === EMPTY) {
       return
     }
@@ -1415,10 +1420,10 @@ export class Chess {
     }
   }
 
-  private _attacked(color: Color, square: number): boolean
-  private _attacked(color: Color, square: number, verbose: false): boolean
-  private _attacked(color: Color, square: number, verbose: true): Square[]
-  private _attacked(color: Color, square: number, verbose?: boolean) {
+  protected _attacked(color: Color, square: number): boolean
+  protected _attacked(color: Color, square: number, verbose: false): boolean
+  protected _attacked(color: Color, square: number, verbose: true): Square[]
+  protected _attacked(color: Color, square: number, verbose?: boolean) {
     const attackers: Square[] = []
 
     const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a8a && sq <= Ox888.h1h
@@ -1520,7 +1525,7 @@ export class Chess {
     }
   }
 
-  private _isKingAttacked(color: Color): boolean {
+  protected _isKingAttacked(color: Color): boolean {
     const square = this._kings[color]
     return square === -1 ? false : this._attacked(swapColor(color), square)
   }
@@ -1641,7 +1646,7 @@ export class Chess {
     )
   }
 
-  private _createMove(internal: InternalMove) {
+  protected _createMove(internal: InternalMove) {
     const san = this._moveToSan(internal, this._moves({ legal: true }))
     const before = this.fen()
 
@@ -1722,7 +1727,7 @@ export class Chess {
     }
   }
 
-  private _moves({
+  protected _moves({
     legal = true,
     piece = undefined,
     square = undefined,
@@ -1755,7 +1760,11 @@ export class Chess {
 
     for (let from = firstSquare; from <= lastSquare; from++) {
       // did we run off the end of the board
-      if (from & 0x888) {
+      if (from & 0x080) {
+        from += 63
+        continue
+      }
+      else if (from & 0x008) {
         from += 7
         continue
       }
@@ -2011,7 +2020,7 @@ export class Chess {
     return prettyMove
   }
 
-  private _push(move: InternalMove) {
+  protected _push(move: InternalMove) {
     this._history.push({
       move,
       kings: { b: this._kings.b, w: this._kings.w },
@@ -2024,7 +2033,7 @@ export class Chess {
     })
   }
 
-  private _movePiece(from: number, to: number) {
+  protected _movePiece(from: number, to: number) {
     this._hash ^= this._pieceKey(from)
 
     this._board[to] = this._board[from]
@@ -2033,7 +2042,7 @@ export class Chess {
     this._hash ^= this._pieceKey(to)
   }
 
-  private _makeMove(move: InternalMove) {
+  protected _makeMove(move: InternalMove) {
     const us = this._turn
     const them = swapColor(us)
     this._push(move)
@@ -2175,7 +2184,7 @@ export class Chess {
     return null
   }
 
-  private _undoMove(): InternalMove | null {
+  protected _undoMove(): InternalMove | null {
     const old = this._history.pop()
     if (old === undefined) {
       return null
@@ -2548,7 +2557,7 @@ export class Chess {
    * 4. ... Ne7 is technically the valid SAN
    */
 
-  private _moveToSan(move: InternalMove, moves: InternalMove[]): string {
+  protected _moveToSan(move: InternalMove, moves: InternalMove[]): string {
     let output = ''
 
     if (move.flags & BITS.KSIDE_CASTLE) {
@@ -2591,9 +2600,17 @@ export class Chess {
   }
 
   // convert a move from Standard Algebraic Notation (SAN) to 0x888 coordinates
-  private _moveFromSan(move: string, strict = false): InternalMove | null {
+  protected _moveFromSan(move: string, strict = false): InternalMove | null {
     // strip off any move decorations: e.g Nf3+?! becomes Nf3
     let cleanMove = strippedSan(move)
+    if (cleanMove[cleanMove.length - 1].match(/[1-8]/)){
+      if (this._turn === WHITE) {
+        cleanMove = cleanMove + 'a'
+      }
+      else{
+        cleanMove = cleanMove + 'h'
+      }
+    }
 
     if (!strict) {
       if (cleanMove === '0-0') {
@@ -2656,7 +2673,7 @@ export class Chess {
     let overlyDisambiguated = false
 
     matches = cleanMove.match(
-      /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/,
+      /([pnbrqkPNBRQK])?([a-h][1-8][a-h])x?-?([a-h][1-8][a-h])([qrbnQRBN])?/,
       //     piece         from              to       promotion
     )
 
@@ -2869,18 +2886,18 @@ export class Chess {
    * Keeps track of position occurrence counts for the purpose of repetition
    * checking. Old positions are removed from the map if their counts are reduced to 0.
    */
-  private _getPositionCount(hash: bigint): number {
+  protected _getPositionCount(hash: bigint): number {
     return this._positionCount.get(hash) ?? 0
   }
 
-  private _incPositionCount() {
+  protected _incPositionCount() {
     this._positionCount.set(
       this._hash,
       (this._positionCount.get(this._hash) ?? 0) + 1,
     )
   }
 
-  private _decPositionCount(hash: bigint) {
+  protected _decPositionCount(hash: bigint) {
     const currentCount = this._positionCount.get(hash) ?? 0
 
     if (currentCount === 1) {
@@ -2890,7 +2907,7 @@ export class Chess {
     }
   }
 
-  private _pruneComments() {
+  protected _pruneComments() {
     const reversedHistory = []
     const currentComments: Record<string, string> = {}
 
@@ -3065,5 +3082,11 @@ export class Chess {
 export class Chess3D extends Chess {
   constructor(fen = DEFAULT_POSITION_3D, { skipValidation = false } = {}) {
     super(fen, { skipValidation })
+  }
+  
+  reset(){
+    this.load(DEFAULT_POSITION_3D)
+    this._comments = {}
+    this._suffixes = {}
   }
 }

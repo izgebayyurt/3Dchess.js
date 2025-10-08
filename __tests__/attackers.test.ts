@@ -198,7 +198,7 @@ test('attackers - return value depends on side to move', () => {
   expect(chess.attackers('f3a')).to.have.members(['e2a', 'g2a', 'g1a'])
   expect(chess.attackers('e2a')).to.have.members(['d1a', 'e1a', 'f1a', 'g1a'])
   expect(chess.attackers('f6a')).to.have.members([])
-   chess.move({from: "e2a", to: "e4a"})
+   chess.move("e4")
   expect(chess.attackers('f6h')).to.have.members(['g8h', 'e7h', 'g7h'])
   expect(chess.attackers('f3a', WHITE)).to.have.members(['g2a', 'd1a', 'g1a'])
   chess.load('4k3/4n3/8/8/8/8/4R3/4K3/64/64/64/64/64/64/64 w - - 0 1')

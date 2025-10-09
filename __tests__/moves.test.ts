@@ -1,11 +1,17 @@
-import { Chess, Square, Move } from '../src/chess'
+import { Chess3D, Chess, Square, Move } from '../src/chess'
 import { split } from './utils'
 import { expect, test } from 'vitest'
 
 test('moves', () => {
-  const chess = new Chess()
-  const moves = `a3 a4 b3 b4 c3 c4 d3 d4 e3 e4 f3 f4 g3 g4 h3 h4 Na3 Nc3 Nf3
-                 Nh3`
+  const chess = new Chess3D()
+
+  const moves = `a3a a4a b3a b4a c3a c4a d3a d4a e3a e4a f3a f4a g3a g4a h3a h4a 
+                 a3b a4b b3b b4b c3b c4b d3b d4b e3b e4b f3b f4b g3b g4b h3b h4b
+                 a2c a2d b2c b2d c2c c2d d2c d2d e2c e2d f2c f2d g2c g2d h2c h2d
+                 a1c a1d b1c b1d c1c c1d d1c d1d e1c e1d f1c f1d g1c g1d h1c h1d
+                 Na3a Nc3a Nb3b Na1c Nc1c Nb2c Nf3a Nh3a `
+
+  console.log(chess.moves())
   expect(chess.moves()).to.have.members(split(moves))
 })
 

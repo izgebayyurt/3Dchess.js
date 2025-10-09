@@ -575,6 +575,17 @@ const RANK_2 = 6
 const RANK_7 = 1
 const RANK_8 = 0
 
+const LAYER_8 = 7
+const LAYER_7 = 6
+/*
+ * const LAYER_6 = 5
+ * const LAYER_5 = 4
+ * const LAYER_4 = 3
+ * const LAYER_3 = 2
+ */
+const LAYER_2 = 1
+const LAYER_1 = 0
+
 const SIDES = {
   [KING]: BITS.KSIDE_CASTLE,
   [QUEEN]: BITS.QSIDE_CASTLE,
@@ -593,7 +604,8 @@ const ROOKS = {
   ],
 }
 
-const SECOND_RANK = { b: RANK_7, w: RANK_2 }
+const SECOND_RANK =  { b: RANK_7, w: RANK_2 }
+const SECOND_LAYER = { b: LAYER_7, w: LAYER_2}
 
 const SAN_NULLMOVE = '--'
 
@@ -607,6 +619,12 @@ function rank(square: number): number {
 function file(square: number): number {
   // file within 0x88 layer (0..7)
   return square & 0xf
+}
+
+// Extracts the zero-based layer of an 0x888 square.
+function layer(square: number): number {
+  // layer within 0x888 layer (0..7)
+  return (square & 0x700) >> 8
 }
 
 function isDigit(c: string): boolean {
@@ -832,14 +850,14 @@ function addMove(
   flags: number = BITS.NORMAL,
 ) {
   const r = rank(to)
-  const l = Math.floor(to / 256)
+  const l = layer(to)
 
   // promotion if reaching last rank OR last layer (white: rank 1 or layer h; black: rank 8 or layer a)
   // rank 1 is 8th row on the board, rank 8 is the 1st row
   const promote =
     piece === PAWN && (
-      (color === WHITE && (r === RANK_1 || l === 7)) ||
-      (color === BLACK && (r === RANK_8 || l === 0))
+      (color === WHITE && (r === RANK_8 || l === LAYER_8)) ||
+      (color === BLACK && (r === RANK_1 || l === LAYER_1))
     )
 
   if (promote) {
@@ -1798,6 +1816,17 @@ export class Chess {
         to = from + PAWN_OFFSETS[us][4]
         if (to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
+
+          // double square upward (layer direction) (only from second rank on same layer)
+          to = from + PAWN_OFFSETS[us][5]
+
+          if (
+            !(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h &&
+            SECOND_LAYER[us] === layer(from) && !this._board[to]
+          ) {
+
+            addMove(moves, us, from, to, PAWN, undefined, BITS.BIG_PAWN)
+          }
         }
 
         // pawn captures forward-diagonals (on rank/file plane)
@@ -1821,7 +1850,7 @@ export class Chess {
         }
 
         // pawn captures upward-diagonals (on file/layer plane)
-        for (let j = 5; j < 7; j++) {
+        for (let j = 6; j < 8; j++) {
           to = from + PAWN_OFFSETS[us][j]
           if (to < Ox888.a8a || to > Ox888.h1h) continue
 

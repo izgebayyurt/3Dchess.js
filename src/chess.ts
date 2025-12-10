@@ -83,77 +83,32 @@ export type PieceSymbol = 'p' | 'n' | 'b' | 'r' | 'q' | 'k'
 
 // prettier-ignore
 export type Square =
-    'a8h' | 'b8h' | 'c8h' | 'd8h' | 'e8h' | 'f8h' | 'g8h' | 'h8h' |
-    'a7h' | 'b7h' | 'c7h' | 'd7h' | 'e7h' | 'f7h' | 'g7h' | 'h7h' |
-    'a6h' | 'b6h' | 'c6h' | 'd6h' | 'e6h' | 'f6h' | 'g6h' | 'h6h' |
-    'a5h' | 'b5h' | 'c5h' | 'd5h' | 'e5h' | 'f5h' | 'g5h' | 'h5h' |
-    'a4h' | 'b4h' | 'c4h' | 'd4h' | 'e4h' | 'f4h' | 'g4h' | 'h4h' |
-    'a3h' | 'b3h' | 'c3h' | 'd3h' | 'e3h' | 'f3h' | 'g3h' | 'h3h' |
-    'a2h' | 'b2h' | 'c2h' | 'd2h' | 'e2h' | 'f2h' | 'g2h' | 'h2h' |
-    'a1h' | 'b1h' | 'c1h' | 'd1h' | 'e1h' | 'f1h' | 'g1h' | 'h1h' |
+    '3a8' | '3b8' | '3c8' | '3d8' | '3e8' | '3f8' | '3g8' | '3h8' |
+    '3a7' | '3b7' | '3c7' | '3d7' | '3e7' | '3f7' | '3g7' | '3h7' |
+    '3a6' | '3b6' | '3c6' | '3d6' | '3e6' | '3f6' | '3g6' | '3h6' |
+    '3a5' | '3b5' | '3c5' | '3d5' | '3e5' | '3f5' | '3g5' | '3h5' |
+    '3a4' | '3b4' | '3c4' | '3d4' | '3e4' | '3f4' | '3g4' | '3h4' |
+    '3a3' | '3b3' | '3c3' | '3d3' | '3e3' | '3f3' | '3g3' | '3h3' |
+    '3a2' | '3b2' | '3c2' | '3d2' | '3e2' | '3f2' | '3g2' | '3h2' |
+    '3a1' | '3b1' | '3c1' | '3d1' | '3e1' | '3f1' | '3g1' | '3h1' |
 
-    'a8g' | 'b8g' | 'c8g' | 'd8g' | 'e8g' | 'f8g' | 'g8g' | 'h8g' |
-    'a7g' | 'b7g' | 'c7g' | 'd7g' | 'e7g' | 'f7g' | 'g7g' | 'h7g' |
-    'a6g' | 'b6g' | 'c6g' | 'd6g' | 'e6g' | 'f6g' | 'g6g' | 'h6g' |
-    'a5g' | 'b5g' | 'c5g' | 'd5g' | 'e5g' | 'f5g' | 'g5g' | 'h5g' |
-    'a4g' | 'b4g' | 'c4g' | 'd4g' | 'e4g' | 'f4g' | 'g4g' | 'h4g' |
-    'a3g' | 'b3g' | 'c3g' | 'd3g' | 'e3g' | 'f3g' | 'g3g' | 'h3g' |
-    'a2g' | 'b2g' | 'c2g' | 'd2g' | 'e2g' | 'f2g' | 'g2g' | 'h2g' |
-    'a1g' | 'b1g' | 'c1g' | 'd1g' | 'e1g' | 'f1g' | 'g1g' | 'h1g' |
+    '2a8' | '2b8' | '2c8' | '2d8' | '2e8' | '2f8' | '2g8' | '2h8' |
+    '2a7' | '2b7' | '2c7' | '2d7' | '2e7' | '2f7' | '2g7' | '2h7' |
+    '2a6' | '2b6' | '2c6' | '2d6' | '2e6' | '2f6' | '2g6' | '2h6' |
+    '2a5' | '2b5' | '2c5' | '2d5' | '2e5' | '2f5' | '2g5' | '2h5' |
+    '2a4' | '2b4' | '2c4' | '2d4' | '2e4' | '2f4' | '2g4' | '2h4' |
+    '2a3' | '2b3' | '2c3' | '2d3' | '2e3' | '2f3' | '2g3' | '2h3' |
+    '2a2' | '2b2' | '2c2' | '2d2' | '2e2' | '2f2' | '2g2' | '2h2' |
+    '2a1' | '2b1' | '2c1' | '2d1' | '2e1' | '2f1' | '2g1' | '2h1' |
 
-    'a8f' | 'b8f' | 'c8f' | 'd8f' | 'e8f' | 'f8f' | 'g8f' | 'h8f' |
-    'a7f' | 'b7f' | 'c7f' | 'd7f' | 'e7f' | 'f7f' | 'g7f' | 'h7f' |
-    'a6f' | 'b6f' | 'c6f' | 'd6f' | 'e6f' | 'f6f' | 'g6f' | 'h6f' |
-    'a5f' | 'b5f' | 'c5f' | 'd5f' | 'e5f' | 'f5f' | 'g5f' | 'h5f' |
-    'a4f' | 'b4f' | 'c4f' | 'd4f' | 'e4f' | 'f4f' | 'g4f' | 'h4f' |
-    'a3f' | 'b3f' | 'c3f' | 'd3f' | 'e3f' | 'f3f' | 'g3f' | 'h3f' |
-    'a2f' | 'b2f' | 'c2f' | 'd2f' | 'e2f' | 'f2f' | 'g2f' | 'h2f' |
-    'a1f' | 'b1f' | 'c1f' | 'd1f' | 'e1f' | 'f1f' | 'g1f' | 'h1f' |
-
-    'a8e' | 'b8e' | 'c8e' | 'd8e' | 'e8e' | 'f8e' | 'g8e' | 'h8e' |
-    'a7e' | 'b7e' | 'c7e' | 'd7e' | 'e7e' | 'f7e' | 'g7e' | 'h7e' |
-    'a6e' | 'b6e' | 'c6e' | 'd6e' | 'e6e' | 'f6e' | 'g6e' | 'h6e' |
-    'a5e' | 'b5e' | 'c5e' | 'd5e' | 'e5e' | 'f5e' | 'g5e' | 'h5e' |
-    'a4e' | 'b4e' | 'c4e' | 'd4e' | 'e4e' | 'f4e' | 'g4e' | 'h4e' |
-    'a3e' | 'b3e' | 'c3e' | 'd3e' | 'e3e' | 'f3e' | 'g3e' | 'h3e' |
-    'a2e' | 'b2e' | 'c2e' | 'd2e' | 'e2e' | 'f2e' | 'g2e' | 'h2e' |
-    'a1e' | 'b1e' | 'c1e' | 'd1e' | 'e1e' | 'f1e' | 'g1e' | 'h1e' |
-
-    'a8d' | 'b8d' | 'c8d' | 'd8d' | 'e8d' | 'f8d' | 'g8d' | 'h8d' |
-    'a7d' | 'b7d' | 'c7d' | 'd7d' | 'e7d' | 'f7d' | 'g7d' | 'h7d' |
-    'a6d' | 'b6d' | 'c6d' | 'd6d' | 'e6d' | 'f6d' | 'g6d' | 'h6d' |
-    'a5d' | 'b5d' | 'c5d' | 'd5d' | 'e5d' | 'f5d' | 'g5d' | 'h5d' |
-    'a4d' | 'b4d' | 'c4d' | 'd4d' | 'e4d' | 'f4d' | 'g4d' | 'h4d' |
-    'a3d' | 'b3d' | 'c3d' | 'd3d' | 'e3d' | 'f3d' | 'g3d' | 'h3d' |
-    'a2d' | 'b2d' | 'c2d' | 'd2d' | 'e2d' | 'f2d' | 'g2d' | 'h2d' |
-    'a1d' | 'b1d' | 'c1d' | 'd1d' | 'e1d' | 'f1d' | 'g1d' | 'h1d' |
-
-    'a8c' | 'b8c' | 'c8c' | 'd8c' | 'e8c' | 'f8c' | 'g8c' | 'h8c' |
-    'a7c' | 'b7c' | 'c7c' | 'd7c' | 'e7c' | 'f7c' | 'g7c' | 'h7c' |
-    'a6c' | 'b6c' | 'c6c' | 'd6c' | 'e6c' | 'f6c' | 'g6c' | 'h6c' |
-    'a5c' | 'b5c' | 'c5c' | 'd5c' | 'e5c' | 'f5c' | 'g5c' | 'h5c' |
-    'a4c' | 'b4c' | 'c4c' | 'd4c' | 'e4c' | 'f4c' | 'g4c' | 'h4c' |
-    'a3c' | 'b3c' | 'c3c' | 'd3c' | 'e3c' | 'f3c' | 'g3c' | 'h3c' |
-    'a2c' | 'b2c' | 'c2c' | 'd2c' | 'e2c' | 'f2c' | 'g2c' | 'h2c' |
-    'a1c' | 'b1c' | 'c1c' | 'd1c' | 'e1c' | 'f1c' | 'g1c' | 'h1c' |
-
-    'a8b' | 'b8b' | 'c8b' | 'd8b' | 'e8b' | 'f8b' | 'g8b' | 'h8b' |
-    'a7b' | 'b7b' | 'c7b' | 'd7b' | 'e7b' | 'f7b' | 'g7b' | 'h7b' |
-    'a6b' | 'b6b' | 'c6b' | 'd6b' | 'e6b' | 'f6b' | 'g6b' | 'h6b' |
-    'a5b' | 'b5b' | 'c5b' | 'd5b' | 'e5b' | 'f5b' | 'g5b' | 'h5b' |
-    'a4b' | 'b4b' | 'c4b' | 'd4b' | 'e4b' | 'f4b' | 'g4b' | 'h4b' |
-    'a3b' | 'b3b' | 'c3b' | 'd3b' | 'e3b' | 'f3b' | 'g3b' | 'h3b' |
-    'a2b' | 'b2b' | 'c2b' | 'd2b' | 'e2b' | 'f2b' | 'g2b' | 'h2b' |
-    'a1b' | 'b1b' | 'c1b' | 'd1b' | 'e1b' | 'f1b' | 'g1b' | 'h1b' |
-
-    'a8a' | 'b8a' | 'c8a' | 'd8a' | 'e8a' | 'f8a' | 'g8a' | 'h8a' |
-    'a7a' | 'b7a' | 'c7a' | 'd7a' | 'e7a' | 'f7a' | 'g7a' | 'h7a' |
-    'a6a' | 'b6a' | 'c6a' | 'd6a' | 'e6a' | 'f6a' | 'g6a' | 'h6a' |
-    'a5a' | 'b5a' | 'c5a' | 'd5a' | 'e5a' | 'f5a' | 'g5a' | 'h5a' |
-    'a4a' | 'b4a' | 'c4a' | 'd4a' | 'e4a' | 'f4a' | 'g4a' | 'h4a' |
-    'a3a' | 'b3a' | 'c3a' | 'd3a' | 'e3a' | 'f3a' | 'g3a' | 'h3a' |
-    'a2a' | 'b2a' | 'c2a' | 'd2a' | 'e2a' | 'f2a' | 'g2a' | 'h2a' |
-    'a1a' | 'b1a' | 'c1a' | 'd1a' | 'e1a' | 'f1a' | 'g1a' | 'h1a'
+    '1a8' | '1b8' | '1c8' | '1d8' | '1e8' | '1f8' | '1g8' | '1h8' |
+    '1a7' | '1b7' | '1c7' | '1d7' | '1e7' | '1f7' | '1g7' | '1h7' |
+    '1a6' | '1b6' | '1c6' | '1d6' | '1e6' | '1f6' | '1g6' | '1h6' |
+    '1a5' | '1b5' | '1c5' | '1d5' | '1e5' | '1f5' | '1g5' | '1h5' |
+    '1a4' | '1b4' | '1c4' | '1d4' | '1e4' | '1f4' | '1g4' | '1h4' |
+    '1a3' | '1b3' | '1c3' | '1d3' | '1e3' | '1f3' | '1g3' | '1h3' |
+    '1a2' | '1b2' | '1c2' | '1d2' | '1e2' | '1f2' | '1g2' | '1h2' |
+    '1a1' | '1b1' | '1c1' | '1d1' | '1e1' | '1f1' | '1g1' | '1h1'
 
 
 export const SUFFIX_LIST = ['!', '?', '!!', '!?', '?!', '??'] as const
@@ -164,7 +119,7 @@ export const DEFAULT_POSITION =
   'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 export const DEFAULT_POSITION_3D =
-  '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/PPPPPPPP/PPPPPPPP/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/8/pppppppp/pppppppp/8/8/8/8/8/8/rnbqkbnr/pppppppp/8/8/8/8/8/8 w KQkq - 0 1'
+  '8/8/8/8/8/8/PPPPPPPP/RNBQKBNR/8/8/8/8/8/8/8/8/rnbqkbnr/pppppppp/8/8/8/8/8/8 w KQkq - 0 1'
 
 export type Piece = {
   color: Color
@@ -296,77 +251,32 @@ const FLAGS: Record<string, string> = {
 
 // prettier-ignore
 export const SQUARES: Square[] = [
-  'a8h', 'b8h', 'c8h', 'd8h', 'e8h', 'f8h', 'g8h', 'h8h',
-  'a7h', 'b7h', 'c7h', 'd7h', 'e7h', 'f7h', 'g7h', 'h7h',
-  'a6h', 'b6h', 'c6h', 'd6h', 'e6h', 'f6h', 'g6h', 'h6h',
-  'a5h', 'b5h', 'c5h', 'd5h', 'e5h', 'f5h', 'g5h', 'h5h',
-  'a4h', 'b4h', 'c4h', 'd4h', 'e4h', 'f4h', 'g4h', 'h4h',
-  'a3h', 'b3h', 'c3h', 'd3h', 'e3h', 'f3h', 'g3h', 'h3h',
-  'a2h', 'b2h', 'c2h', 'd2h', 'e2h', 'f2h', 'g2h', 'h2h',
-  'a1h', 'b1h', 'c1h', 'd1h', 'e1h', 'f1h', 'g1h', 'h1h',
+  '3a8', '3b8', '3c8', '3d8', '3e8', '3f8', '3g8', '3h8',
+  '3a7', '3b7', '3c7', '3d7', '3e7', '3f7', '3g7', '3h7',
+  '3a6', '3b6', '3c6', '3d6', '3e6', '3f6', '3g6', '3h6',
+  '3a5', '3b5', '3c5', '3d5', '3e5', '3f5', '3g5', '3h5',
+  '3a4', '3b4', '3c4', '3d4', '3e4', '3f4', '3g4', '3h4',
+  '3a3', '3b3', '3c3', '3d3', '3e3', '3f3', '3g3', '3h3',
+  '3a2', '3b2', '3c2', '3d2', '3e2', '3f2', '3g2', '3h2',
+  '3a1', '3b1', '3c1', '3d1', '3e1', '3f1', '3g1', '3h1',
 
-  'a8g', 'b8g', 'c8g', 'd8g', 'e8g', 'f8g', 'g8g', 'h8g',
-  'a7g', 'b7g', 'c7g', 'd7g', 'e7g', 'f7g', 'g7g', 'h7g',
-  'a6g', 'b6g', 'c6g', 'd6g', 'e6g', 'f6g', 'g6g', 'h6g',
-  'a5g', 'b5g', 'c5g', 'd5g', 'e5g', 'f5g', 'g5g', 'h5g',
-  'a4g', 'b4g', 'c4g', 'd4g', 'e4g', 'f4g', 'g4g', 'h4g',
-  'a3g', 'b3g', 'c3g', 'd3g', 'e3g', 'f3g', 'g3g', 'h3g',
-  'a2g', 'b2g', 'c2g', 'd2g', 'e2g', 'f2g', 'g2g', 'h2g',
-  'a1g', 'b1g', 'c1g', 'd1g', 'e1g', 'f1g', 'g1g', 'h1g',
+  '2a8', '2b8', '2c8', '2d8', '2e8', '2f8', '2g8', '2h8',
+  '2a7', '2b7', '2c7', '2d7', '2e7', '2f7', '2g7', '2h7',
+  '2a6', '2b6', '2c6', '2d6', '2e6', '2f6', '2g6', '2h6',
+  '2a5', '2b5', '2c5', '2d5', '2e5', '2f5', '2g5', '2h5',
+  '2a4', '2b4', '2c4', '2d4', '2e4', '2f4', '2g4', '2h4',
+  '2a3', '2b3', '2c3', '2d3', '2e3', '2f3', '2g3', '2h3',
+  '2a2', '2b2', '2c2', '2d2', '2e2', '2f2', '2g2', '2h2',
+  '2a1', '2b1', '2c1', '2d1', '2e1', '2f1', '2g1', '2h1',
 
-  'a8f', 'b8f', 'c8f', 'd8f', 'e8f', 'f8f', 'g8f', 'h8f',
-  'a7f', 'b7f', 'c7f', 'd7f', 'e7f', 'f7f', 'g7f', 'h7f',
-  'a6f', 'b6f', 'c6f', 'd6f', 'e6f', 'f6f', 'g6f', 'h6f',
-  'a5f', 'b5f', 'c5f', 'd5f', 'e5f', 'f5f', 'g5f', 'h5f',
-  'a4f', 'b4f', 'c4f', 'd4f', 'e4f', 'f4f', 'g4f', 'h4f',
-  'a3f', 'b3f', 'c3f', 'd3f', 'e3f', 'f3f', 'g3f', 'h3f',
-  'a2f', 'b2f', 'c2f', 'd2f', 'e2f', 'f2f', 'g2f', 'h2f',
-  'a1f', 'b1f', 'c1f', 'd1f', 'e1f', 'f1f', 'g1f', 'h1f',
-
-  'a8e', 'b8e', 'c8e', 'd8e', 'e8e', 'f8e', 'g8e', 'h8e',
-  'a7e', 'b7e', 'c7e', 'd7e', 'e7e', 'f7e', 'g7e', 'h7e',
-  'a6e', 'b6e', 'c6e', 'd6e', 'e6e', 'f6e', 'g6e', 'h6e',
-  'a5e', 'b5e', 'c5e', 'd5e', 'e5e', 'f5e', 'g5e', 'h5e',
-  'a4e', 'b4e', 'c4e', 'd4e', 'e4e', 'f4e', 'g4e', 'h4e',
-  'a3e', 'b3e', 'c3e', 'd3e', 'e3e', 'f3e', 'g3e', 'h3e',
-  'a2e', 'b2e', 'c2e', 'd2e', 'e2e', 'f2e', 'g2e', 'h2e',
-  'a1e', 'b1e', 'c1e', 'd1e', 'e1e', 'f1e', 'g1e', 'h1e',
-
-  'a8d', 'b8d', 'c8d', 'd8d', 'e8d', 'f8d', 'g8d', 'h8d',
-  'a7d', 'b7d', 'c7d', 'd7d', 'e7d', 'f7d', 'g7d', 'h7d',
-  'a6d', 'b6d', 'c6d', 'd6d', 'e6d', 'f6d', 'g6d', 'h6d',
-  'a5d', 'b5d', 'c5d', 'd5d', 'e5d', 'f5d', 'g5d', 'h5d',
-  'a4d', 'b4d', 'c4d', 'd4d', 'e4d', 'f4d', 'g4d', 'h4d',
-  'a3d', 'b3d', 'c3d', 'd3d', 'e3d', 'f3d', 'g3d', 'h3d',
-  'a2d', 'b2d', 'c2d', 'd2d', 'e2d', 'f2d', 'g2d', 'h2d',
-  'a1d', 'b1d', 'c1d', 'd1d', 'e1d', 'f1d', 'g1d', 'h1d',
-
-  'a8c', 'b8c', 'c8c', 'd8c', 'e8c', 'f8c', 'g8c', 'h8c',
-  'a7c', 'b7c', 'c7c', 'd7c', 'e7c', 'f7c', 'g7c', 'h7c',
-  'a6c', 'b6c', 'c6c', 'd6c', 'e6c', 'f6c', 'g6c', 'h6c',
-  'a5c', 'b5c', 'c5c', 'd5c', 'e5c', 'f5c', 'g5c', 'h5c',
-  'a4c', 'b4c', 'c4c', 'd4c', 'e4c', 'f4c', 'g4c', 'h4c',
-  'a3c', 'b3c', 'c3c', 'd3c', 'e3c', 'f3c', 'g3c', 'h3c',
-  'a2c', 'b2c', 'c2c', 'd2c', 'e2c', 'f2c', 'g2c', 'h2c',
-  'a1c', 'b1c', 'c1c', 'd1c', 'e1c', 'f1c', 'g1c', 'h1c',
-
-  'a8b', 'b8b', 'c8b', 'd8b', 'e8b', 'f8b', 'g8b', 'h8b',
-  'a7b', 'b7b', 'c7b', 'd7b', 'e7b', 'f7b', 'g7b', 'h7b',
-  'a6b', 'b6b', 'c6b', 'd6b', 'e6b', 'f6b', 'g6b', 'h6b',
-  'a5b', 'b5b', 'c5b', 'd5b', 'e5b', 'f5b', 'g5b', 'h5b',
-  'a4b', 'b4b', 'c4b', 'd4b', 'e4b', 'f4b', 'g4b', 'h4b',
-  'a3b', 'b3b', 'c3b', 'd3b', 'e3b', 'f3b', 'g3b', 'h3b',
-  'a2b', 'b2b', 'c2b', 'd2b', 'e2b', 'f2b', 'g2b', 'h2b',
-  'a1b', 'b1b', 'c1b', 'd1b', 'e1b', 'f1b', 'g1b', 'h1b',
-
-  'a8a', 'b8a', 'c8a', 'd8a', 'e8a', 'f8a', 'g8a', 'h8a',
-  'a7a', 'b7a', 'c7a', 'd7a', 'e7a', 'f7a', 'g7a', 'h7a',
-  'a6a', 'b6a', 'c6a', 'd6a', 'e6a', 'f6a', 'g6a', 'h6a',
-  'a5a', 'b5a', 'c5a', 'd5a', 'e5a', 'f5a', 'g5a', 'h5a',
-  'a4a', 'b4a', 'c4a', 'd4a', 'e4a', 'f4a', 'g4a', 'h4a',
-  'a3a', 'b3a', 'c3a', 'd3a', 'e3a', 'f3a', 'g3a', 'h3a',
-  'a2a', 'b2a', 'c2a', 'd2a', 'e2a', 'f2a', 'g2a', 'h2a',
-  'a1a', 'b1a', 'c1a', 'd1a', 'e1a', 'f1a', 'g1a', 'h1a',
+  '1a8', '1b8', '1c8', '1d8', '1e8', '1f8', '1g8', '1h8',
+  '1a7', '1b7', '1c7', '1d7', '1e7', '1f7', '1g7', '1h7',
+  '1a6', '1b6', '1c6', '1d6', '1e6', '1f6', '1g6', '1h6',
+  '1a5', '1b5', '1c5', '1d5', '1e5', '1f5', '1g5', '1h5',
+  '1a4', '1b4', '1c4', '1d4', '1e4', '1f4', '1g4', '1h4',
+  '1a3', '1b3', '1c3', '1d3', '1e3', '1f3', '1g3', '1h3',
+  '1a2', '1b2', '1c2', '1d2', '1e2', '1f2', '1g2', '1h2',
+  '1a1', '1b1', '1c1', '1d1', '1e1', '1f1', '1g1', '1h1',
 ]
 
 const BITS: Record<string, number> = {
@@ -479,14 +389,14 @@ const HEADER_TEMPLATE = {
 // eslint-disable-next-line
 const Ox888: Record<Square, number> = (() => {
   const map = {} as Record<Square, number>
+  const layers = '123'
   const files = 'abcdefgh'
   const ranks = '87654321'
-  const layers = 'abcdefgh'
-  for (let l = 0; l < 8; l++) {
+  for (let l = 0; l < 3; l++) {
     for (let r = 0; r < 8; r++) {
       for (let f = 0; f < 8; f++) {
         const idx = f + r * 16 + l * 256
-        const key = `${files[f]}${ranks[r]}${layers[l]}` as Square
+        const key = `${layers[l]}${files[f]}${ranks[r]}` as Square
         map[key] = idx
       }
     }
@@ -495,9 +405,9 @@ const Ox888: Record<Square, number> = (() => {
 })()
 
 const PAWN_OFFSETS = {
-  // forward, double-forward, capture-right, capture-left, up, double-up, up-capture-right, up-capture-left
-  b: [16, 32, 17, 15, -256, -512, -257, -255],
-  w: [-16, -32, -17, -15, 256, 512, 255, 257],
+  // forward, double-forward, capture-right, capture-left, up, up-capture-right, up-capture-left
+  b: [16, 32, 17, 15, -256, -257, -255],
+  w: [-16, -32, -17, -15, 256, 255, 257],
 }
 
 const PIECE_OFFSETS = {
@@ -558,7 +468,7 @@ const RAYS = [
   -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
 ];
 
-const PIECE_MASKS = { p: 0x1, n: 0x2, b: 0x4, r: 0x8, q: 0x10, k: 0x20 }
+// const PIECE_MASKS = { p: 0x1, n: 0x2, b: 0x4, r: 0x8, q: 0x10, k: 0x20 }
 
 const SYMBOLS = 'pnbrqkPNBRQK'
 
@@ -575,14 +485,7 @@ const RANK_2 = 6
 const RANK_7 = 1
 const RANK_8 = 0
 
-const LAYER_8 = 7
-const LAYER_7 = 6
-/*
- * const LAYER_6 = 5
- * const LAYER_5 = 4
- * const LAYER_4 = 3
- * const LAYER_3 = 2
- */
+const LAYER_3 = 2
 const LAYER_2 = 1
 const LAYER_1 = 0
 
@@ -595,17 +498,17 @@ const SIDES = {
 // Runtime code uses per-instance dynamic detection based on loaded position.
 const ROOKS = {
   w: [
-    { square: Ox888.a1a, flag: BITS.QSIDE_CASTLE },
-    { square: Ox888.h1a, flag: BITS.KSIDE_CASTLE },
+    { square: '1a1' as Square, flag: BITS.QSIDE_CASTLE },
+    { square: '1h1' as Square, flag: BITS.KSIDE_CASTLE },
   ],
   b: [
-    { square: Ox888.a8h, flag: BITS.QSIDE_CASTLE },
-    { square: Ox888.h8h, flag: BITS.KSIDE_CASTLE },
+    { square: '1a8' as Square, flag: BITS.QSIDE_CASTLE },
+    { square: '1h1' as Square, flag: BITS.KSIDE_CASTLE },
   ],
 }
 
 const SECOND_RANK =  { b: RANK_7, w: RANK_2 }
-const SECOND_LAYER = { b: LAYER_7, w: LAYER_2}
+const SECOND_LAYER = { b: LAYER_2, w: LAYER_2}
 
 const SAN_NULLMOVE = '--'
 
@@ -623,7 +526,7 @@ function file(square: number): number {
 
 // Extracts the zero-based layer of an 0x888 square.
 function layer(square: number): number {
-  // layer within 0x888 layer (0..7)
+  // layer within 0x888 layer (0..2)
   return (square & 0x700) >> 8
 }
 
@@ -637,9 +540,9 @@ function algebraic(square: number): Square {
   const r = rank(square)
   const l = Math.floor(square / 256)
   return (
+    '123'.substring(l, l + 1) +
     'abcdefgh'.substring(f, f + 1) +
-    '87654321'.substring(r, r + 1) +
-    'abcdefgh'.substring(l, l + 1)
+    '87654321'.substring(r, r + 1)
   ) as Square
 }
 
@@ -698,11 +601,11 @@ export function validateFen(fen: string): { ok: boolean; error?: string } {
   // 7th criterion: 1st field contains either 8 (legacy) or 64 (3D) rows
   let rows = tokens[0].split('/')
   rows = rows.flatMap(part => part === '64' ? Array(8).fill('8') : [part]);
-  if (rows.length !== 8 && rows.length !== 64) {
+  if (rows.length !== 8 && rows.length !== 24) {
     return {
       ok: false,
       error:
-        "Invalid FEN: piece data must contain 8 or 64 '/'-delimited rows",
+        "Invalid FEN: piece data must contain 8 or 24 '/'-delimited rows",
     }
   }
 
@@ -856,8 +759,8 @@ function addMove(
   // rank 1 is 8th row on the board, rank 8 is the 1st row
   const promote =
     piece === PAWN && (
-      (color === WHITE && (r === RANK_8 || l === LAYER_8)) ||
-      (color === BLACK && (r === RANK_1 || l === LAYER_1))
+      (color === WHITE && r === RANK_8 && l === LAYER_3) ||
+      (color === BLACK && r === RANK_1 && l === LAYER_1)
     )
 
   if (promote) {
@@ -1011,7 +914,7 @@ export class Chess {
       // Iterate layers l = 0..7 (a..h)
       let rowIndex = 0
       let square = 0
-      for (let l = 0; l < 8; l++) {
+      for (let l = 0; l < 3; l++) {
         for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
           const row = rows[rowIndex++]
           for (let k = 0; k < row.length; k++) {
@@ -1070,7 +973,7 @@ export class Chess {
     let fen = ''
 
     // 3D FEN output: layers a..h, each with rows a1x..h1x up to a8x..h8x
-    for (let l = 0; l < 8; l++) {
+    for (let l = 0; l < 3; l++) {
       for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
         let empty = 0
         for (let f = 0; f < 8; f++) {
@@ -1090,7 +993,7 @@ export class Chess {
         }
         if (empty > 0) fen += empty
         // add row separator except after the last row of the last layer
-        if (!(l === 7 && rankFromBottom === 7)) fen += '/'
+        if (!(l === 2 && rankFromBottom === 7)) fen += '/'
       }
     }
 
@@ -1204,7 +1107,7 @@ export class Chess {
   protected _computeHash() {
     let hash = 0n
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
       // did we run off the end of the board
       if (i & 0x888) {
         i += 7
@@ -1256,7 +1159,7 @@ export class Chess {
 
   findPiece(piece: Piece): Square[] {
     const squares: Square[] = []
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
       // did we run off the end of the board?
       if (i & 0x080) {
         i += 63
@@ -1444,14 +1347,14 @@ export class Chess {
   protected _attacked(color: Color, square: number, verbose?: boolean) {
     const attackers: Square[] = []
 
-    const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888.a8a && sq <= Ox888.h1h
+    const inBounds = (sq: number) => !(sq & 0x888) && sq >= Ox888["1a8"] && sq <= Ox888["3h1"]
 
     const ROOK_DIRS = [-16, 1, 16, -1, 256, -256]
     const BISHOP_DIRS = [-17, -15, 17, 15, 257, 255, -257, -255, 272, 240, -272, -240]
     const QUEEN_DIRS = ROOK_DIRS.concat(BISHOP_DIRS)
     const KING_DIRS = QUEEN_DIRS
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
 
       if (i & 0x080) {
         i += 127
@@ -1592,7 +1495,7 @@ export class Chess {
     let numPieces = 0
     let squareColor = 0
 
-    for (let i = Ox888.a8a; i <= Ox888.h1h; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
       squareColor = (squareColor + 1) % 2
       if (i & 0x080) {
         i += 63
@@ -1761,8 +1664,8 @@ export class Chess {
     const us = this._turn
     const them = swapColor(us)
 
-    let firstSquare = Ox888.a8a
-    let lastSquare = Ox888.h1h
+    let firstSquare = Ox888["1a8"]
+    let lastSquare = Ox888["3h1"]
     let singleSquare = false
 
     // are we generating moves for a single square?
@@ -1799,13 +1702,13 @@ export class Chess {
 
         // single square forward, non-capturing (rank direction)
         to = from + PAWN_OFFSETS[us][0]
-        if (!(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
+        if (!(to & 0x888) && to >= Ox888["1a8"] && to <= Ox888["3h1"] && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
 
           // double square forward (only from second rank on same layer)
           to = from + PAWN_OFFSETS[us][1]
           if (
-            !(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h &&
+            !(to & 0x888) && to >= Ox888["1a8"] && to <= Ox888["3h1"] &&
             SECOND_RANK[us] === rank(from) && !this._board[to]
           ) {
             addMove(moves, us, from, to, PAWN, undefined, BITS.BIG_PAWN)
@@ -1814,14 +1717,14 @@ export class Chess {
 
         // single square upward (layer direction), non-capturing
         to = from + PAWN_OFFSETS[us][4]
-        if (to >= Ox888.a8a && to <= Ox888.h1h && !this._board[to]) {
+        if (to >= Ox888["1a8"] && to <= Ox888["3h1"] && !this._board[to]) {
           addMove(moves, us, from, to, PAWN)
 
           // double square upward (layer direction) (only from second rank on same layer)
           to = from + PAWN_OFFSETS[us][5]
 
           if (
-            !(to & 0x888) && to >= Ox888.a8a && to <= Ox888.h1h &&
+            !(to & 0x888) && to >= Ox888["1a8"] && to <= Ox888["3h1"] &&
             SECOND_LAYER[us] === layer(from) && !this._board[to]
           ) {
 
@@ -1852,7 +1755,7 @@ export class Chess {
         // pawn captures upward-diagonals (on file/layer plane)
         for (let j = 6; j < 8; j++) {
           to = from + PAWN_OFFSETS[us][j]
-          if (to < Ox888.a8a || to > Ox888.h1h) continue
+          if (to < Ox888["1a8"] || to > Ox888["3h1"]) continue
 
           if (this._board[to]?.color === them) {
             addMove(
@@ -1876,7 +1779,7 @@ export class Chess {
           while (true) {
             to += offset
             // off the board in-layer or by leaving layer bounds
-            if ((to & 0x888) || to < Ox888.a8a || to > Ox888.h1h) break
+            if ((to & 0x888) || to < Ox888["1a8"] || to > Ox888["3h1"]) break
 
             if (!this._board[to]) {
               addMove(moves, us, from, to, type)
@@ -2789,7 +2692,7 @@ export class Chess {
 
   ascii(): string {
     let s = '   +------------------------+\n'
-    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
       // display the rank
       if (file(i) === 0) {
         s += ' ' + '87654321'[rank(i)] + ' |'
@@ -2853,7 +2756,19 @@ export class Chess {
     const output = []
     let row = []
 
-    for (let i = Ox888.a8a; i <= Ox888.h1a; i++) {
+    for (let i = Ox888["1a8"]; i <= Ox888["3h1"]; i++) {
+
+      if (i & 0x080) {
+        i += 127
+        row = []
+        continue
+      }
+      else if (i & 0x008) {
+        output.push(row)
+        i += 7
+        row = []
+        continue
+      }
       if (this._board[i] == null) {
         row.push(null)
       } else {
@@ -2863,13 +2778,8 @@ export class Chess {
           color: this._board[i].color,
         })
       }
-      if ((i + 1) & 0x888) {
-        output.push(row)
-        row = []
-        i += 8
-      }
     }
-
+    if (row.length != 0) output.push(row)
     return output
   }
 

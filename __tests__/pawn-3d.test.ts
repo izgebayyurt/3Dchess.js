@@ -270,10 +270,10 @@ describe('pawn 3D moves', () => {
       chess.put({ type: 'k', color: 'b' }, 'e8h')
       chess.put({ type: 'p', color: 'w' }, 'e7d')
       const moves = chess.moves({ square: 'e7d' })
-      expect(moves.some((m) => m.includes('e8d') && m.includes('q'))).toBe(true)
-      expect(moves.some((m) => m.includes('e8d') && m.includes('r'))).toBe(true)
-      expect(moves.some((m) => m.includes('e8d') && m.includes('b'))).toBe(true)
-      expect(moves.some((m) => m.includes('e8d') && m.includes('n'))).toBe(true)
+      expect(moves.some((m) => m.includes('e8d') && m.includes('Q'))).toBe(true)
+      expect(moves.some((m) => m.includes('e8d') && m.includes('R'))).toBe(true)
+      expect(moves.some((m) => m.includes('e8d') && m.includes('B'))).toBe(true)
+      expect(moves.some((m) => m.includes('e8d') && m.includes('N'))).toBe(true)
     })
 
     it('does not generate non-promotion moves when reaching rank 8', () => {
@@ -304,8 +304,8 @@ describe('pawn 3D moves', () => {
       chess.put({ type: 'p', color: 'w' }, 'e4g') // pawn on layer g, rank 4
       const moves = chess.moves({ square: 'e4g' })
       // moving to e4h should be a promotion
-      expect(moves.some((m) => m.includes('e4h') && m.includes('q'))).toBe(true)
-      expect(moves.some((m) => m.includes('e4h') && m.includes('r'))).toBe(true)
+      expect(moves.some((m) => m.includes('e4h') && m.includes('Q'))).toBe(true)
+      expect(moves.some((m) => m.includes('e4h') && m.includes('R'))).toBe(true)
     })
 
     it('promotes via layer-diagonal capture into layer h', () => {
@@ -317,7 +317,7 @@ describe('pawn 3D moves', () => {
       chess.put({ type: 'r', color: 'b' }, 'f4h')
       const moves = chess.moves({ square: 'e4g' })
       // capturing f4h is a promotion
-      expect(moves.some((m) => m.includes('f4h') && m.includes('q'))).toBe(true)
+      expect(moves.some((m) => m.includes('f4h') && m.includes('Q'))).toBe(true)
     })
   })
 
@@ -333,10 +333,10 @@ describe('pawn 3D moves', () => {
       chess.put({ type: 'p', color: 'b' }, 'e2d')
       chess.load(chess.fen().replace(' w ', ' b '))
       const moves = chess.moves({ square: 'e2d' })
-      expect(moves.some((m) => m.includes('e1d') && m.includes('q'))).toBe(true)
-      expect(moves.some((m) => m.includes('e1d') && m.includes('r'))).toBe(true)
-      expect(moves.some((m) => m.includes('e1d') && m.includes('b'))).toBe(true)
-      expect(moves.some((m) => m.includes('e1d') && m.includes('n'))).toBe(true)
+      expect(moves.some((m) => m.includes('e1d') && m.includes('Q'))).toBe(true)
+      expect(moves.some((m) => m.includes('e1d') && m.includes('R'))).toBe(true)
+      expect(moves.some((m) => m.includes('e1d') && m.includes('B'))).toBe(true)
+      expect(moves.some((m) => m.includes('e1d') && m.includes('N'))).toBe(true)
     })
   })
 
@@ -353,8 +353,8 @@ describe('pawn 3D moves', () => {
       chess.load(chess.fen().replace(' w ', ' b '))
       const moves = chess.moves({ square: 'e4b' })
       // moving to e4a should be a promotion
-      expect(moves.some((m) => m.includes('e4a') && m.includes('q'))).toBe(true)
-      expect(moves.some((m) => m.includes('e4a') && m.includes('r'))).toBe(true)
+      expect(moves.some((m) => m.includes('e4a') && m.includes('Q'))).toBe(true)
+      expect(moves.some((m) => m.includes('e4a') && m.includes('R'))).toBe(true)
     })
   })
 })

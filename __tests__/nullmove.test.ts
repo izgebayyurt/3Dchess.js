@@ -1,48 +1,48 @@
 import { Chess } from '../src/chess'
 import { test, expect } from 'vitest'
+import { fen2d_to_3d } from './utils'
 
 test('null move at start', () => {
-  const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-  const next = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1'
+  const fen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+  const next = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1')
   const chess = new Chess(fen)
   chess.move('--')
   expect(chess.fen()).toBe(next)
 })
 
 test('making null move by passing null object', () => {
-  const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-  const next = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1'
+  const fen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+  const next = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 1 1')
   const chess = new Chess(fen)
   chess.move(null)
   expect(chess.fen()).toBe(next)
 })
 
 test('null move is correctly displayed in pgn', () => {
-  const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  const fen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
   const chess = new Chess(fen)
-  chess.move('e4')
-  chess.move('e5')
+  chess.move('e4d')
+  chess.move('e5d')
   chess.move('--')
-  chess.move('Nf6')
+  chess.move('Nf6d')
   chess.move('--')
   chess.move('--')
-  chess.move('Nf3')
+  chess.move('Nf3d')
 
-  expect(chess.pgn()).toBe(
-    '[Event "?"]\n[Site "?"]\n[Date "????.??.??"]\n[Round "?"]\n[White "?"]\n[Black "?"]\n[Result "*"]\n\n1. e4 e5 2. -- Nf6 3. -- -- 4. Nf3 *',
-  )
+  // The PGN includes SetUp/FEN headers since we loaded a custom (non-default) position
+  expect(chess.pgn()).toContain('1. e4d e5d 2. -- Nf6d 3. -- -- 4. Nf3d *')
 })
 
 test('null move while in check is not allowed', () => {
   const fn = () => {
-    const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+    const fen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
 
     const chess = new Chess(fen)
-    chess.move('e4')
-    chess.move('e5')
-    chess.move('Nf3')
-    chess.move('d6')
-    chess.move('Bb5+')
+    chess.move('e4d')
+    chess.move('e5d')
+    chess.move('Nf3d')
+    chess.move('d6d')
+    chess.move('Bb5d+')
     chess.move('--')
   }
   expect(fn).toThrow('Null move not allowed when in check')
@@ -51,7 +51,7 @@ test('null move while in check is not allowed', () => {
 //tests describing current behaviour and should be discussed if this behaviour is desired or if other null move logic is better
 
 test('6 null moves in a row result in a draw', () => {
-  const fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+  const fen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
   const chess = new Chess(fen)
   chess.move('--')
   chess.move('--')

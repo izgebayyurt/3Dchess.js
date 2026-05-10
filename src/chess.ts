@@ -1092,7 +1092,10 @@ export class Chess {
       if (forceEnpassantSquare) {
         epSquare = algebraic(this._fenEpSquare)
       } else if (this._epSquare !== EMPTY) {
-        const bigPawnSquare = this._epSquare + (this._turn === WHITE ? 16 : -16)
+        // this._turn is who is TO MOVE (not who made the double push)
+        // white double push means it's now black's turn: bigPawn is above ep square
+        // black double push means it's now white's turn: bigPawn is below ep square
+        const bigPawnSquare = this._epSquare + (this._turn === WHITE ? -16 : 16)
         const squares = [bigPawnSquare + 1, bigPawnSquare - 1]
 
         for (const square of squares) {
@@ -1367,6 +1370,14 @@ export class Chess {
 
     const whiteKingInPlace = this._kings.w !== EMPTY && this._kings.w === this._kingStart.w
     const blackKingInPlace = this._kings.b !== EMPTY && this._kings.b === this._kingStart.b
+
+    // If king is not in its starting position, clear all castling rights for that color
+    if (!whiteKingInPlace) {
+      this._castling.w = 0
+    }
+    if (!blackKingInPlace) {
+      this._castling.b = 0
+    }
 
     // Validate rooks are still on their starting squares; otherwise clear rights
     for (const entry of this._rookStart.w) {

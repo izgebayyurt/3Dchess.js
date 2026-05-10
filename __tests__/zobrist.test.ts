@@ -1,5 +1,6 @@
 import { Chess, xoroshiro128 } from '../src/chess'
 import { expect, test } from 'vitest'
+import { fen2d_to_3d } from './utils'
 
 // Very basic hash tests, more extensive testing is done as part of the move and load pgn tests.
 
@@ -26,11 +27,12 @@ test('hash is the same for the same position', () => {
 })
 
 test('hash is different for different positions', () => {
-  const a = new Chess()
-  a.move('e4')
+  const startFen = fen2d_to_3d('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+  const a = new Chess(startFen)
+  a.move('e4d')
 
-  const b = new Chess()
-  b.move('d4')
+  const b = new Chess(startFen)
+  b.move('d4d')
 
   expect(a.hash()).not.toEqual(b.hash())
 })

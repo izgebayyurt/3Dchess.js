@@ -988,17 +988,19 @@ export class Chess {
       for (let l = 0; l < 8; l++) {
         for (let rankFromBottom = 0; rankFromBottom < 8; rankFromBottom++) {
           const row = rows[rowIndex++]
+          let fileIndex = 0  // track actual file position, accounting for digit runs
           for (let k = 0; k < row.length; k++) {
             const ch = row[k]
             if (isDigit(ch)) {
-              continue
+              fileIndex += parseInt(ch, 10)
             } else {
               const color = ch < 'a' ? WHITE : BLACK
-              const sq = k + rankFromBottom * 16 + l * 256
+              const sq = fileIndex + rankFromBottom * 16 + l * 256
               this._set(sq, { type: ch.toLowerCase() as PieceSymbol, color })
               if (ch.toLowerCase() === KING) {
                 this._kings[color] = sq
               }
+              fileIndex++
             }
           }
         }
@@ -2067,8 +2069,10 @@ export class Chess {
     this._movePiece(move.from, move.to)
 
     // if ep capture, remove the captured pawn
+    // white captures upward (to rank+1), so captured pawn is one rank below (to - 16)
+    // black captures downward (to rank-1), so captured pawn is one rank above (to + 16)
     if (move.flags & BITS.EP_CAPTURE) {
-      if (this._turn === BLACK) {
+      if (us === WHITE) {
         this._clear(move.to - 16)
       } else {
         this._clear(move.to + 16)
@@ -2128,7 +2132,7 @@ export class Chess {
     if (move.flags & BITS.BIG_PAWN) {
       let epSquare
 
-      if (us === BLACK) {
+      if (us === WHITE) {
         epSquare = move.to - 16
       } else {
         epSquare = move.to + 16
@@ -2222,9 +2226,11 @@ export class Chess {
 
     if (move.captured) {
       if (move.flags & BITS.EP_CAPTURE) {
-        // en passant capture
+        // en passant capture undo: restore the captured pawn
+        // white captures upward, captured pawn was one rank below destination
+        // black captures downward, captured pawn was one rank above destination
         let index: number
-        if (us === BLACK) {
+        if (us === WHITE) {
           index = move.to - 16
         } else {
           index = move.to + 16
@@ -2662,10 +2668,20 @@ export class Chess {
 
     let overlyDisambiguated = false
 
+    // 3D square: file[a-h] + rank[1-8] + layer[a-h] (3 chars)
+    // Also handle legacy 2D squares: file[a-h] + rank[1-8] (2 chars)
     matches = cleanMove.match(
-      /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/,
-      //     piece         from              to       promotion
+      /([pnbrqkPNBRQK])?([a-h][1-8][a-h])x?-?([a-h][1-8][a-h])([qrbnQRBN])?/,
+      //     piece         from (3D)              to (3D)         promotion
     )
+
+    if (!matches) {
+      // try 2D squares
+      matches = cleanMove.match(
+        /([pnbrqkPNBRQK])?([a-h][1-8])x?-?([a-h][1-8])([qrbnQRBN])?/,
+        //     piece         from (2D)       to (2D)      promotion
+      )
+    }
 
     if (matches) {
       piece = matches[1]
@@ -2679,14 +2695,22 @@ export class Chess {
     } else {
       /*
        * The [a-h]?[1-8]? portion of the regex below handles moves that may be
-       * overly disambiguated (e.g. Nge7 is unnecessary and non-standard when
-       * there is one legal knight move to e7). In this case, the value of
+       * overly disambiguated (e.g. Nge7d is unnecessary and non-standard when
+       * there is one legal knight move to e7d). In this case, the value of
        * 'from' variable will be a rank or file, not a square.
        */
 
+      // Try 3D overly-disambiguated pattern first
       matches = cleanMove.match(
-        /([pnbrqkPNBRQK])?([a-h]?[1-8]?)x?-?([a-h][1-8])([qrbnQRBN])?/,
+        /([pnbrqkPNBRQK])?([a-h]?[1-8]?)x?-?([a-h][1-8][a-h])([qrbnQRBN])?/,
       )
+
+      if (!matches) {
+        // fallback to 2D overly-disambiguated
+        matches = cleanMove.match(
+          /([pnbrqkPNBRQK])?([a-h]?[1-8]?)x?-?([a-h][1-8])([qrbnQRBN])?/,
+        )
+      }
 
       if (matches) {
         piece = matches[1]
@@ -2730,14 +2754,15 @@ export class Chess {
       } else if (overlyDisambiguated) {
         /*
          * SPECIAL CASE: we parsed a move string that may have an unneeded
-         * rank/file disambiguator (e.g. Nge7).  The 'from' variable will
+         * rank/file disambiguator (e.g. Nge7d).  The 'from' variable will
+         * be just a file or rank character.
          */
 
         const square = algebraic(moves[i].from)
         if (
           (!piece || piece.toLowerCase() == moves[i].piece) &&
           Ox888[to] == moves[i].to &&
-          (from == square[0] || from == square[1]) &&
+          (from == square[0] || from == square[1] || from == square[2]) &&
           (!promotion || promotion.toLowerCase() == moves[i].promotion)
         ) {
           return moves[i]
@@ -2810,11 +2835,18 @@ export class Chess {
     return this._turn
   }
 
-  board(): ({ square: Square; type: PieceSymbol; color: Color } | null)[][] {
+  board(
+    layer?: 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h',
+  ): ({ square: Square; type: PieceSymbol; color: Color } | null)[][] {
+    const layerIndex = layer
+      ? 'abcdefgh'.indexOf(layer)
+      : 0
+    const startSquare = `a1${'abcdefgh'[layerIndex]}` as Square
+    const endSquare = `h8${'abcdefgh'[layerIndex]}` as Square
     const output = []
     let row = []
 
-    for (let i = Ox888.a1a; i <= Ox888.h8a; i++) {
+    for (let i = Ox888[startSquare]; i <= Ox888[endSquare]; i++) {
       if (this._board[i] == null) {
         row.push(null)
       } else {
@@ -2831,7 +2863,7 @@ export class Chess {
       }
     }
 
-    return output
+    return output.reverse()
   }
 
   squareColor(square: Square): 'light' | 'dark' | null {

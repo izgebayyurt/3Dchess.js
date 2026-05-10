@@ -27,10 +27,10 @@ test('hash is the same for the same position', () => {
 
 test('hash is different for different positions', () => {
   const a = new Chess()
-  a.move('e4')
+  a.move('e4d')
 
   const b = new Chess()
-  b.move('d4')
+  b.move('d4d')
 
   expect(a.hash()).not.toEqual(b.hash())
 })

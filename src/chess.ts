@@ -1817,7 +1817,7 @@ export class Chess {
         }
 
         // pawn captures upward-diagonals (on file/layer plane)
-        for (let j = 5; j < 7; j++) {
+        for (let j = 6; j < 8; j++) {
           to = from + PAWN_OFFSETS[us][j]
           if (to < Ox888.a1a || to > Ox888.h8h) continue
 

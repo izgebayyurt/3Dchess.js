@@ -64,6 +64,31 @@ Standard 8-row 2D FEN is accepted and mapped to layer `a`. Full 3D FEN has **64 
 
 `DEFAULT_POSITION` contains the 3D starting position FEN with pieces on layers `a` (white) and `h` (black).
 
+### Piece movement rules
+
+All offsets below are for white; black uses the negated values.
+
+**Pawn** advances toward higher ranks *and* higher layers.
+- Non-capturing: one rank forward (`+16`), two ranks forward (`+32`, starting rank only), one layer up (`+256`)
+- Rank-file captures: `+17` and `+15` (diagonally forward on the rank-file plane); en passant applies here
+- File-layer captures: `+255` and `+257` (one layer up + one file left/right); defined by `PAWN_OFFSETS` indices 6 and 7
+
+**Knight** — 24 jump targets, never blocked, one L-shape on each of three planes:
+- File-rank (classic): `±18, ±33, ±31, ±14`
+- File-layer: `±258, ±254, ±513, ±511`
+- Rank-layer: `±288, ±224, ±528, ±496`
+
+**Bishop** — slides along diagonals of any plane (12 directions):
+- File-rank: `±17, ±15`
+- File-layer: `±257, ±255`
+- Rank-layer: `±272, ±240`
+
+**Rook** — slides along the 6 orthogonal axes: `±1` (file), `±16` (rank), `±256` (layer).
+
+**Queen** — combines rook and bishop: all 18 directions above, slides until blocked.
+
+**King** — same 18 directions as queen, one step only. This covers face-adjacent and edge-adjacent squares but intentionally omits the 8 true 3D body-diagonal directions (e.g., `±273`), so the king has at most 18 reachable squares rather than the full 26 of a 3×3×3 cube. Castling is kingside (`+2` file) or queenside (`−2` file), entirely within the king's current layer.
+
 ### Pawn promotion
 
 Promotion fires when a pawn reaches:
